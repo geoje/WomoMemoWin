@@ -1,0 +1,33 @@
+﻿<Window x:Class="WomoMemo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d" WindowStyle="None"
+        Title="WomoMemo" Height="500" Width="300" MinHeight="500" MinWidth="300"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" />
+    </WindowChrome.WindowChrome>
+    <StackPanel>
+        <Grid MouseDown="Grid_MouseDown" Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="32"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="32"/>
+                <ColumnDefinition Width="32"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnNew" ToolTip="New memo" Grid.Column="0" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnNew_Click">
+                <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
+            </Button>
+            <Button x:Name="btnSettings" ToolTip="Settings" Grid.Column="2" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnSettings_Click">
+                <materialDesign:PackIcon Kind="CogOutline" Foreground="Gray" />
+            </Button>
+            <Button x:Name="btnClose" ToolTip="Close Window" Grid.Column="3" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnClose_Click">
+                <materialDesign:PackIcon Kind="Close" Foreground="Gray" />
+            </Button>
+        </Grid>
+        <TextBox Margin="8" Padding="8" Background="#EFEFEF" materialDesign:HintAssist.Hint="Search..." materialDesign:TextFieldAssist.HasClearButton="True" />
+    </StackPanel>
+</Window>
