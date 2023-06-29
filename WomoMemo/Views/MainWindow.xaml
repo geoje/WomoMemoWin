@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" WindowStyle="None"
-        Title="WomoMemo" Height="500" Width="300" MinHeight="500" MinWidth="300"
+        Title="WomoMemo" Height="500" Width="300" MinWidth="300"
         FontFamily="{DynamicResource MaterialDesignFont}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" />
@@ -13,7 +13,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="32" />
-            <RowDefinition Height="40" />
+            <RowDefinition Height="48" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" MouseDown="Grid_MouseDown" Background="White">
@@ -33,10 +33,10 @@
                 <materialDesign:PackIcon Kind="Close" Foreground="Gray" />
             </Button>
         </Grid>
-        <TextBox Grid.Row="1" Margin="8,8,8,0" Padding="8" Background="#EFEFEF" materialDesign:HintAssist.Hint="Search..." materialDesign:TextFieldAssist.HasClearButton="True" />
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
-            <StackPanel>
-                <ItemsControl x:Name="lstMemo" Padding="4" ItemsSource="{Binding Memos}">
+        <TextBox Grid.Row="1" Margin="8" Padding="8" Background="#EFEFEF" materialDesign:HintAssist.Hint="Search..." materialDesign:TextFieldAssist.HasClearButton="True" />
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" materialDesign:ThemeAssist.Theme="Light">
+            <StackPanel HorizontalAlignment="Center">
+                <ItemsControl x:Name="lstMemo" ItemsSource="{Binding Memos}" Padding="4,0,4,0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -44,7 +44,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <materialDesign:Card Width="266" Padding="8" Margin="4"
+                            <materialDesign:Card Width="266" Padding="8" Margin="4,0,4,8"
                                                  Background="{DynamicResource PrimaryHueDarkBrush}"
                                                  Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" ScrollViewer.CanContentScroll="True">
                                 <StackPanel>
