@@ -10,8 +10,13 @@
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" />
     </WindowChrome.WindowChrome>
-    <StackPanel>
-        <Grid MouseDown="Grid_MouseDown" Background="White">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" MouseDown="Grid_MouseDown" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="*"/>
@@ -28,6 +33,33 @@
                 <materialDesign:PackIcon Kind="Close" Foreground="Gray" />
             </Button>
         </Grid>
-        <TextBox Margin="8" Padding="8" Background="#EFEFEF" materialDesign:HintAssist.Hint="Search..." materialDesign:TextFieldAssist.HasClearButton="True" />
-    </StackPanel>
+        <TextBox Grid.Row="1" Margin="8,8,8,0" Padding="8" Background="#EFEFEF" materialDesign:HintAssist.Hint="Search..." materialDesign:TextFieldAssist.HasClearButton="True" />
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <ItemsControl x:Name="lstMemo" Padding="4" ItemsSource="{Binding Memos}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <materialDesign:Card Width="266" Padding="8" Margin="4"
+                                                 Background="{DynamicResource PrimaryHueDarkBrush}"
+                                                 Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" ScrollViewer.CanContentScroll="True">
+                                <StackPanel>
+                                    <TextBlock Padding="4" Text="{Binding Content}" />
+                                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" />
+                                    <CheckBox Padding="4" Content="Do something good"
+                                              Style="{StaticResource MaterialDesignUserForegroundCheckBox}" />
+                                    <CheckBox Padding="4" Content="Take a breather"
+                                              Style="{StaticResource MaterialDesignUserForegroundCheckBox}" />
+                                </StackPanel>
+                            </materialDesign:Card>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>

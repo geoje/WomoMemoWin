@@ -1,5 +1,8 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Input;
+using WomoMemo.Models;
 
 namespace WomoMemo
 {
@@ -11,6 +14,18 @@ namespace WomoMemo
         public MainWindow()
         {
             InitializeComponent();
+            var memos = GetMemos();
+            if (memos.Count > 0) lstMemo.ItemsSource = memos;
+        }
+
+        private List<Memo> GetMemos()
+        {
+            return new List<Memo>()
+            {
+                new Memo(0, false, "Hello Jake,\nThis is sample memo."),
+                new Memo(0, true, "ToDo\nList\nWe\nHave\nCheck\nBox"),
+                new Memo(0, false, "I'd like to go to the home.\nPlease make me free!")
+            };
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
