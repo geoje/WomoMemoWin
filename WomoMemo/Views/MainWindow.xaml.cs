@@ -77,9 +77,8 @@ namespace WomoMemo
                     var response = await client.GetAsync("/api/memos");
                     if (response.IsSuccessStatusCode)
                     {
-                        Trace.WriteLine(await response.Content.ReadAsStringAsync());
-                        // JObject result = JObject.Parse(await response.Content.ReadAsStringAsync());
-                        // Trace.WriteLine(result.ToString());
+                        JArray result = JArray.Parse(await response.Content.ReadAsStringAsync());
+                        Trace.WriteLine(result.ToString());
                     }
                 }
             }
