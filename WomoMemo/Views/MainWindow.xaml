@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" WindowStyle="None"
-        Title="WomoMemo" Height="500" Width="300" MinWidth="300"
+        Title="WomoMemo" Height="500" Width="300" MinWidth="300" WindowStartupLocation="CenterScreen"
         FontFamily="{DynamicResource MaterialDesignFont}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" />
@@ -26,8 +26,15 @@
             <Button x:Name="btnNew" ToolTip="New memo" Grid.Column="0" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnNew_Click">
                 <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
             </Button>
-            <Button x:Name="btnSettings" ToolTip="Settings" Grid.Column="2" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnSettings_Click">
-                <materialDesign:PackIcon Kind="CogOutline" Foreground="Gray" />
+            <Button x:Name="btnUser" ToolTip="User" Grid.Column="2" Padding="4" Style="{StaticResource MaterialDesignFlatButton}" Click="btnUser_Click">
+                <Ellipse Height="24" Width="24">
+                    <Ellipse.Fill>
+                        <ImageBrush x:Name="imgUser"/>
+                    </Ellipse.Fill>
+                </Ellipse>
+            </Button>
+            <Button x:Name="btnLogin" ToolTip="Login" Grid.Column="2" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnLogin_Click">
+                <materialDesign:PackIcon Kind="LoginVariant" Foreground="Gray" />
             </Button>
             <Button x:Name="btnClose" ToolTip="Close Window" Grid.Column="3" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnClose_Click">
                 <materialDesign:PackIcon Kind="Close" Foreground="Gray" />
