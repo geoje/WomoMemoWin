@@ -54,7 +54,7 @@
                         <DataTemplate>
                             <materialDesign:Card Width="266" Padding="8" Margin="4,0,4,8" Cursor="Hand"
                                                  Foreground="#1A202C" ScrollViewer.CanContentScroll="True"
-                                                 Background="{Binding Color}">
+                                                 Background="{Binding Color}" materialDesign:ElevationAssist.Elevation="Dp0">
                                 <StackPanel>
                                     <TextBlock Padding="4" Text="{Binding Title}" FontWeight="Bold" />
                                     <TextBlock Padding="4" Text="{Binding Content}" />
