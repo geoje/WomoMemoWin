@@ -26,7 +26,7 @@
             <Button x:Name="btnNew" ToolTip="New memo" Grid.Column="0" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnNew_Click">
                 <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
             </Button>
-            <Label x:Name="lblAlert" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" FontSize="10"/>
+            <Label x:Name="lblAlert" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#1A202C" FontSize="10"/>
             <Button x:Name="btnUser" ToolTip="User" Grid.Column="2" Padding="4" Style="{StaticResource MaterialDesignFlatButton}" Click="btnUser_Click">
                 <Ellipse Height="24" Width="24">
                     <Ellipse.Fill>
@@ -42,9 +42,9 @@
             </Button>
         </Grid>
         <TextBox Grid.Row="1" Margin="8" Padding="8" Background="#EFEFEF" materialDesign:HintAssist.Hint="Search..." materialDesign:TextFieldAssist.HasClearButton="True" />
-        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" materialDesign:ThemeAssist.Theme="Light">
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
             <StackPanel HorizontalAlignment="Center">
-                <ItemsControl x:Name="lstMemo" ItemsSource="{Binding Memos}" Padding="4,0,4,0">
+                <ItemsControl x:Name="lstMemo" Padding="4,0,4,0">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -52,16 +52,12 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <materialDesign:Card Width="266" Padding="8" Margin="4,0,4,8"
-                                                 Background="{DynamicResource PrimaryHueDarkBrush}"
-                                                 Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}" ScrollViewer.CanContentScroll="True">
+                            <materialDesign:Card Width="266" Padding="8" Margin="4,0,4,8" Cursor="Hand"
+                                                 Foreground="#1A202C" ScrollViewer.CanContentScroll="True"
+                                                 Background="{Binding Color}">
                                 <StackPanel>
+                                    <TextBlock Padding="4" Text="{Binding Title}" FontWeight="Bold" />
                                     <TextBlock Padding="4" Text="{Binding Content}" />
-                                    <Separator Style="{StaticResource MaterialDesignLightSeparator}" />
-                                    <CheckBox Padding="4" Content="Do something good"
-                                              Style="{StaticResource MaterialDesignUserForegroundCheckBox}" />
-                                    <CheckBox Padding="4" Content="Take a breather"
-                                              Style="{StaticResource MaterialDesignUserForegroundCheckBox}" />
                                 </StackPanel>
                             </materialDesign:Card>
                         </DataTemplate>

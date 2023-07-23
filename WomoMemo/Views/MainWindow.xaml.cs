@@ -1,7 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
@@ -11,7 +9,6 @@ using WomoMemo.Models;
 using WomoMemo.Views;
 using System.Threading;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Windows.Media.Imaging;
 
 namespace WomoMemo
@@ -21,14 +18,14 @@ namespace WomoMemo
     /// </summary>
     public partial class MainWindow : Window
     {
-        ObservableCollection<Memo> memos = new ObservableCollection<Memo>();
+        ObservableCollection<Memo> Memos = new ObservableCollection<Memo>();
 
         public MainWindow()
         {
             InitializeComponent();
             Config.Load();
             Task.Run(UpdateDataFromServer);
-            lstMemo.ItemsSource = memos;
+            lstMemo.ItemsSource = Memos;
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -135,9 +132,9 @@ namespace WomoMemo
                             JArray result = JArray.Parse(await response.Content.ReadAsStringAsync());
                             Dispatcher.Invoke(() =>
                             {
-                                memos.Clear();
+                                Memos.Clear();
                                 foreach (var item in result.Children())
-                                    memos.Add(new Memo(
+                                    Memos.Add(new Memo(
                                         item["id"]?.ToObject<int>() ?? 0,
                                         item["userId"]?.ToString() ?? "",
                                         item["title"]?.ToString() ?? "",
