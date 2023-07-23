@@ -12,6 +12,7 @@ using WomoMemo.Views;
 using System.Threading;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Windows.Media.Imaging;
 
 namespace WomoMemo
 {
@@ -27,6 +28,7 @@ namespace WomoMemo
             InitializeComponent();
             Config.Load();
             Task.Run(UpdateDataFromServer);
+            lstMemo.ItemsSource = memos;
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
@@ -53,32 +55,101 @@ namespace WomoMemo
 
         async void UpdateDataFromServer()
         {
+            var memoBaseAddress = new Uri(Config.MemoUrl);
+
             for (; ; Thread.Sleep(1000))
             {
-                if (string.IsNullOrEmpty(Config.sessionTokenValue)) continue;
+                if (string.IsNullOrEmpty(Config.SessionTokenValue)) continue;
+                var cookieContainer = new CookieContainer();
+                cookieContainer.Add(memoBaseAddress, new Cookie(Config.SessionTokenName, Config.SessionTokenValue));
 
                 // Toggle user button
                 Dispatcher.Invoke(() =>
                 {
-                    btnUser.Visibility = string.IsNullOrEmpty(Config.sessionTokenValue) ? Visibility.Collapsed : Visibility.Visible;
-                    btnLogin.Visibility = string.IsNullOrEmpty(Config.sessionTokenValue) ? Visibility.Visible : Visibility.Collapsed;
+                    btnUser.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Collapsed : Visibility.Visible;
+                    btnLogin.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Visible : Visibility.Collapsed;
                 });
 
                 // Get user profile
+                if (!string.IsNullOrEmpty(Config.SessionTokenValue) && string.IsNullOrEmpty(User.Id))
+                {
+                    try
+                    {
+                        using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer })
+                        using (var client = new HttpClient(handler) { BaseAddress = memoBaseAddress })
+                        {
+                            var response = await client.GetAsync("/api/auth/session");
+                            if (response.IsSuccessStatusCode)
+                            {
+                                // Parse session to User instance
+                                JToken result = JObject.Parse(await response.Content.ReadAsStringAsync())["user"] ?? JObject.Parse("{}");
+                                User.Name = result["name"]?.ToString() ?? "";
+                                User.Email = result["email"]?.ToString() ?? "";
+                                User.ImageUrl = result["image"]?.ToString() ?? "";
+                                User.Id = result["id"]?.ToString() ?? "";
+                                User.Provider = result["provider"]?.ToString() ?? "";
+                            }
+                        }
+                    } catch (Exception) {
+                        lblAlert.Content = "Error on getting profile";
+                    }
+                }
 
+                // Download user profile image
+                if (!string.IsNullOrEmpty(User.ImageUrl) && User.Image == null)
+                {
+                    try
+                    {
+                        using (var client = new HttpClient())
+                        {
+                            var response = await client.GetAsync(User.ImageUrl);
+                            if (response.IsSuccessStatusCode)
+                            {
+                                byte[] imageBytes = response.Content.ReadAsByteArrayAsync().Result;
+                                Dispatcher.Invoke(() =>
+                                {
+                                    User.Image = new BitmapImage();
+                                    User.Image.BeginInit();
+                                    User.Image.StreamSource = new System.IO.MemoryStream(imageBytes);
+                                    User.Image.CacheOption = BitmapCacheOption.OnLoad;
+                                    User.Image.EndInit();
+                                    imgUser.ImageSource = User.Image;
+                                });
+                            }
+                        }
+                    } catch (Exception)
+                    {
+                        lblAlert.Content = "Error on downloading profile";
+                    }
+                }
 
                 // Get memos
-                var baseAddress = new Uri(Config.memoUrl);
-                var cookieContainer = new CookieContainer();
                 using (var handler = new HttpClientHandler() { CookieContainer = cookieContainer })
-                using (var client = new HttpClient(handler) { BaseAddress = baseAddress })
+                using (var client = new HttpClient(handler) { BaseAddress = memoBaseAddress })
                 {
-                    cookieContainer.Add(baseAddress, new Cookie(Config.sessionTokenName, Config.sessionTokenValue));
-                    var response = await client.GetAsync("/api/memos");
-                    if (response.IsSuccessStatusCode)
+                    try
                     {
-                        JArray result = JArray.Parse(await response.Content.ReadAsStringAsync());
-                        Trace.WriteLine(result.ToString());
+                        var response = await client.GetAsync("/api/memos");
+                        if (response.IsSuccessStatusCode)
+                        {
+                            JArray result = JArray.Parse(await response.Content.ReadAsStringAsync());
+                            Dispatcher.Invoke(() =>
+                            {
+                                memos.Clear();
+                                foreach (var item in result.Children())
+                                    memos.Add(new Memo(
+                                        item["id"]?.ToObject<int>() ?? 0,
+                                        item["userId"]?.ToString() ?? "",
+                                        item["title"]?.ToString() ?? "",
+                                        item["content"]?.ToString() ?? "",
+                                        item["color"]?.ToString() ?? "",
+                                        item["checkbox"]?.ToObject<bool>() ?? false,
+                                        item["updatedAt"]?.ToString() ?? ""));
+                            });
+                        }
+                    } catch(Exception)
+                    {
+                        lblAlert.Content = "Error on getting memos";
                     }
                 }
             }

@@ -26,10 +26,11 @@
             <Button x:Name="btnNew" ToolTip="New memo" Grid.Column="0" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnNew_Click">
                 <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
             </Button>
+            <Label x:Name="lblAlert" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="Gray" FontSize="10"/>
             <Button x:Name="btnUser" ToolTip="User" Grid.Column="2" Padding="4" Style="{StaticResource MaterialDesignFlatButton}" Click="btnUser_Click">
                 <Ellipse Height="24" Width="24">
                     <Ellipse.Fill>
-                        <ImageBrush x:Name="imgUser"/>
+                        <ImageBrush x:Name="imgUser" Stretch="UniformToFill"/>
                     </Ellipse.Fill>
                 </Ellipse>
             </Button>
