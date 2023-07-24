@@ -10,6 +10,7 @@ using WomoMemo.Views;
 using System.Threading;
 using System.Collections.ObjectModel;
 using System.Windows.Media.Imaging;
+using System.Diagnostics;
 
 namespace WomoMemo
 {
@@ -76,19 +77,21 @@ namespace WomoMemo
                         using (var client = new HttpClient(handler) { BaseAddress = memoBaseAddress })
                         {
                             var response = await client.GetAsync("/api/auth/session");
-                            if (response.IsSuccessStatusCode)
-                            {
-                                // Parse session to User instance
-                                JToken result = JObject.Parse(await response.Content.ReadAsStringAsync())["user"] ?? JObject.Parse("{}");
-                                User.Name = result["name"]?.ToString() ?? "";
-                                User.Email = result["email"]?.ToString() ?? "";
-                                User.ImageUrl = result["image"]?.ToString() ?? "";
-                                User.Id = result["id"]?.ToString() ?? "";
-                                User.Provider = result["provider"]?.ToString() ?? "";
-                            }
+                            response.EnsureSuccessStatusCode();
+
+                            // Parse session to User instance
+                            JToken result = JObject.Parse(await response.Content.ReadAsStringAsync())["user"] ?? JObject.Parse("{}");
+                            User.Name = result["name"]?.ToString() ?? "";
+                            User.Email = result["email"]?.ToString() ?? "";
+                            User.ImageUrl = result["image"]?.ToString() ?? "";
+                            User.Id = result["id"]?.ToString() ?? "";
+                            User.Provider = result["provider"]?.ToString() ?? "";
+
+                            if (string.IsNullOrEmpty(User.Id))
+                                Dispatcher.Invoke(() => lblAlert.Content = "Invalid token, Please login again");
                         }
                     } catch (Exception) {
-                        lblAlert.Content = "Error on getting profile";
+                        Dispatcher.Invoke(() => lblAlert.Content = "Error on getting profile");
                     }
                 }
 
