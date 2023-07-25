@@ -4,8 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        mc:Ignorable="d" WindowStyle="None"
-        Title="WomoMemo" Width="300" Height="500" MinWidth="300" MinHeight="500" WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d" WindowStyle="None" WindowStartupLocation="CenterScreen"
+        Title="WomoMemo" Width="300" Height="500" MinWidth="300" MinHeight="500"
         FontFamily="{DynamicResource MaterialDesignFont}">
     <Window.Resources>
         <Style TargetType="{x:Type ScrollBar}">
@@ -98,7 +98,7 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border BorderBrush="{Binding BorderColor}" BorderThickness="1" CornerRadius="4"  Width="262"
-                                    Background="{Binding Color}" Padding="16" Margin="4,0,4,8" Cursor="Hand">
+                                    Background="{Binding Color}" Padding="16" Margin="4,0,4,8" Cursor="Hand" MouseUp="Border_MouseUp">
                                 <StackPanel>
                                     <TextBlock Foreground="#1A202C" Text="{Binding Title}" FontWeight="Bold" />
                                     <TextBlock Foreground="#1A202C" Text="{Binding Content}" Margin="0,8,0,0" />

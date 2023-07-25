@@ -3,10 +3,44 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WomoMemo.Views"
-        mc:Ignorable="d"
-        Title="MemoWindow" Height="400" Width="400">
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d" WindowStyle="None" WindowStartupLocation="CenterScreen"
+        Title="WomoMemo" Width="400" Height="400"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0" />
+    </WindowChrome.WindowChrome>
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="32" />
+            <RowDefinition Height="48" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" MouseDown="Grid_MouseDown" Background="White">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="32"/>
+                <ColumnDefinition Width="32"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="32"/>
+                <ColumnDefinition Width="32"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="btnList" ToolTip="List" Grid.Column="0" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnList_Click">
+                <materialDesign:PackIcon Kind="Menu" Foreground="Gray" />
+            </Button>
+            <Button x:Name="btnNew" ToolTip="New memo" Grid.Column="1" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnNew_Click">
+                <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
+            </Button>
+            <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="3" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnDelete_Click">
+                <materialDesign:PackIcon Kind="TrashCanOutline" Foreground="Gray" />
+            </Button>
+            <Button x:Name="btnClose" ToolTip="Close" Grid.Column="4" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnClose_Click">
+                <materialDesign:PackIcon Kind="Close" Foreground="Gray" />
+            </Button>
+        </Grid>
+        <TextBox x:Name="txtTitle"   Grid.Row="1" Margin="8" Padding="8" Background="Transparent"
+                 materialDesign:HintAssist.Hint="Title" FontWeight="Bold"
+                 materialDesign:TextFieldAssist.HasClearButton="True" />
+        <TextBox x:Name="txtContent" Grid.Row="2" Margin="8" Padding="8" Background="Transparent"
+                 materialDesign:HintAssist.Hint="Content" AcceptsReturn="True"/>
     </Grid>
 </Window>

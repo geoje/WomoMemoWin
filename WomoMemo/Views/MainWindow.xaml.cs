@@ -188,5 +188,10 @@ namespace WomoMemo
                 }
             }
         }
+
+        private void Border_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            new MemoWindow(Memos[0]).Show();
+        }
     }
 }
