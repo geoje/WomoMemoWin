@@ -14,13 +14,11 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ScrollBar}">
                         <Grid Background="{TemplateBinding Background}">
-                            <Border CornerRadius="8">
-                                <Track x:Name="PART_Track" IsDirectionReversed="true">
-                                    <Track.Thumb>
-                                        <Thumb x:Name="Thumb" Background="#DDD" Width="8"/>
-                                    </Track.Thumb>
-                                </Track>
-                            </Border>
+                            <Track x:Name="PART_Track" IsDirectionReversed="true">
+                                <Track.Thumb>
+                                    <Thumb x:Name="Thumb" Background="#CCC" Width="8"/>
+                                </Track.Thumb>
+                            </Track>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
