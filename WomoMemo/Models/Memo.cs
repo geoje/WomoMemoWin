@@ -27,7 +27,7 @@
         }
         public string BorderColor
         {
-            get { return color == "white" ? "#eee" : Color; }
+            get { return color == "white" ? "#CBD5E0" : Color; }
         }
         public bool Checkbox { get; set; }
         public string UpdatedAt { get; set; }
