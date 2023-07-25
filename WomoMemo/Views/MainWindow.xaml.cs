@@ -26,6 +26,7 @@ namespace WomoMemo
             InitializeComponent();
             Config.Load();
             Task.Run(UpdateDataFromServer);
+
             lstMemo.ItemsSource = Memos;
         }
 
@@ -40,11 +41,31 @@ namespace WomoMemo
         }
         private void btnUser_Click(object sender, RoutedEventArgs e)
         {
+            btnUser.ContextMenu.PlacementTarget = btnUser;
+            btnUser.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            btnUser.ContextMenu.IsOpen = true;
+            e.Handled = true;
+        }
+        private void btnUser_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
 
         }
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
             new LoginWindow().Show();
+        }
+        private void mnuLogout_Click(object sender, RoutedEventArgs e)
+        {
+            Config.SessionTokenValue = "";
+            Config.Save();
+            User.Clear();
+            Memos.Clear();
+            imgProvider.Source = null;
+            imgUser.ImageSource = null;
+            txtName.Text = "";
+            txtEmail.Text = "";
+            btnUser.Visibility = Visibility.Collapsed;
+            btnLogin.Visibility = Visibility.Visible;
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
@@ -57,9 +78,8 @@ namespace WomoMemo
 
             for (; ; Thread.Sleep(1000))
             {
+                // Validate token
                 if (string.IsNullOrEmpty(Config.SessionTokenValue)) continue;
-                var cookieContainer = new CookieContainer();
-                cookieContainer.Add(memoBaseAddress, new Cookie(Config.SessionTokenName, Config.SessionTokenValue));
 
                 // Toggle user button
                 Dispatcher.Invoke(() =>
@@ -67,6 +87,10 @@ namespace WomoMemo
                     btnUser.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Collapsed : Visibility.Visible;
                     btnLogin.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Visible : Visibility.Collapsed;
                 });
+
+                // Set cookie
+                var cookieContainer = new CookieContainer();
+                cookieContainer.Add(memoBaseAddress, new Cookie(Config.SessionTokenName, Config.SessionTokenValue));
 
                 // Get user profile
                 if (!string.IsNullOrEmpty(Config.SessionTokenValue) && string.IsNullOrEmpty(User.Id))
@@ -89,6 +113,14 @@ namespace WomoMemo
 
                             if (string.IsNullOrEmpty(User.Id))
                                 Dispatcher.Invoke(() => lblAlert.Content = "Invalid token, Please login again");
+                            else
+                                Dispatcher.Invoke(() =>
+                                {
+                                    lblAlert.Content = "";
+                                    imgProvider.Source = new BitmapImage(new Uri($"/Resources/{User.Provider}.png", UriKind.RelativeOrAbsolute));
+                                    txtName.Text = User.Name;
+                                    txtEmail.Text = User.Email;
+                                });
                         }
                     } catch (Exception) {
                         Dispatcher.Invoke(() => lblAlert.Content = "Error on getting profile");
@@ -119,7 +151,7 @@ namespace WomoMemo
                         }
                     } catch (Exception)
                     {
-                        lblAlert.Content = "Error on downloading profile";
+                        Dispatcher.Invoke(() => lblAlert.Content = "Error on downloading profile");
                     }
                 }
 
@@ -149,7 +181,7 @@ namespace WomoMemo
                         }
                     } catch(Exception)
                     {
-                        lblAlert.Content = "Error on getting memos";
+                        Dispatcher.Invoke(() => lblAlert.Content = "Error on getting memos");
                     }
                 }
             }

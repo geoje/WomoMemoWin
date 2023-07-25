@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
         mc:Ignorable="d"
-        Title="Login - Womosoft" Height="700" Width="700" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+        Title="Login - Womosoft" Height="700" Width="700" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Loaded="Window_Loaded">
     <Grid>
-        <wv2:WebView2 Name="webMain" NavigationCompleted="webMain_NavigationCompleted" />
+        <wv2:WebView2 Name="webMain" NavigationStarting="webMain_NavigationStarting"/>
     </Grid>
 </Window>

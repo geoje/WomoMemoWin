@@ -15,10 +15,15 @@ namespace WomoMemo.Views
         public LoginWindow()
         {
             InitializeComponent();
+        }
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            await webMain.EnsureCoreWebView2Async();
+            webMain.CoreWebView2.CookieManager.DeleteAllCookies();
             webMain.Source = new Uri(Config.AuthUrl + "/login?callbackUrl=" + HttpUtility.UrlEncode(Config.MemoUrl));
         }
 
-        private async void webMain_NavigationCompleted(object sender, CoreWebView2NavigationCompletedEventArgs e)
+        private async void webMain_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
         {
             List<CoreWebView2Cookie> cookieList = await webMain.CoreWebView2.CookieManager.GetCookiesAsync(Config.MemoUrl);
             var sessinoTokenCookie = cookieList.Find(cookie => cookie.Name.Equals(Config.SessionTokenName));

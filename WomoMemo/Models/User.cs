@@ -1,5 +1,4 @@
-﻿using System.IO;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Media.Imaging;
 
 namespace WomoMemo.Models
 {
@@ -11,5 +10,15 @@ namespace WomoMemo.Models
         public static BitmapImage? Image;
         public static string Id = "";
         public static string Provider = "";
+
+        public static void Clear()
+        {
+            Name = "";
+            Email = "";
+            ImageUrl = "";
+            Image = null;
+            Id = "";
+            Provider = "";
+        }
     }
 }

@@ -9,13 +9,23 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\google.png" />
+    <None Remove="Resources\naver.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="WomoMemo.ico" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1823.32" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1901.177" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\google.png" />
+    <Resource Include="Resources\naver.png" />
   </ItemGroup>
 
 </Project>

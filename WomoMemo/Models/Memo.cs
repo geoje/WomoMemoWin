@@ -14,16 +14,20 @@
                 return
                     color == "white" ? "#FFF" :
                     color == "gray" ? "#EDF2F7" :
-                    color == "red" ? "FED7D7" :
+                    color == "red" ? "#FED7D7" :
                     color == "orange" ? "#FEEBC8" :
                     color == "yellow" ? "#FEFCBF" :
                     color == "green" ? "#C6F6D5" :
                     color == "teal" ? "#B2F5EA" :
                     color == "blue" ? "#BEE3F8" :
                     color == "cyan" ? "#C4F1F9" :
-                    color == "purple" ? "E9D8FD" :
-                    color == "pink" ? "FED7E2" : "#FFF";
+                    color == "purple" ? "#E9D8FD" :
+                    color == "pink" ? "#FED7E2" : "#FFF";
             }
+        }
+        public string BorderColor
+        {
+            get { return color == "white" ? "#eee" : Color; }
         }
         public bool Checkbox { get; set; }
         public string UpdatedAt { get; set; }
