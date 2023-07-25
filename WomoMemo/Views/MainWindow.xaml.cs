@@ -20,6 +20,7 @@ namespace WomoMemo
     public partial class MainWindow : Window
     {
         ObservableCollection<Memo> Memos = new ObservableCollection<Memo>();
+        string ErrorMessage = "";
 
         public MainWindow()
         {
@@ -84,6 +85,7 @@ namespace WomoMemo
                 // Toggle user button
                 Dispatcher.Invoke(() =>
                 {
+                    lblAlert.Content = ErrorMessage;
                     btnUser.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Collapsed : Visibility.Visible;
                     btnLogin.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Visible : Visibility.Collapsed;
                 });
@@ -112,18 +114,18 @@ namespace WomoMemo
                             User.Provider = result["provider"]?.ToString() ?? "";
 
                             if (string.IsNullOrEmpty(User.Id))
-                                Dispatcher.Invoke(() => lblAlert.Content = "Invalid token, Please login again");
+                                ErrorMessage = "Invalid token, Please login again";
                             else
                                 Dispatcher.Invoke(() =>
                                 {
-                                    lblAlert.Content = "";
+                                    ErrorMessage = "";
                                     imgProvider.Source = new BitmapImage(new Uri($"/Resources/{User.Provider}.png", UriKind.RelativeOrAbsolute));
                                     txtName.Text = User.Name;
                                     txtEmail.Text = User.Email;
                                 });
                         }
                     } catch (Exception) {
-                        Dispatcher.Invoke(() => lblAlert.Content = "Error on getting profile");
+                        ErrorMessage = "Error on getting profile";
                     }
                 }
 
@@ -151,7 +153,7 @@ namespace WomoMemo
                         }
                     } catch (Exception)
                     {
-                        Dispatcher.Invoke(() => lblAlert.Content = "Error on downloading profile");
+                        ErrorMessage = "Error on downloading profile";
                     }
                 }
 
@@ -181,7 +183,7 @@ namespace WomoMemo
                         }
                     } catch(Exception)
                     {
-                        Dispatcher.Invoke(() => lblAlert.Content = "Error on getting memos");
+                        ErrorMessage = "Error on getting memos";
                     }
                 }
             }
