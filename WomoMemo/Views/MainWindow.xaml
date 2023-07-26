@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" WindowStyle="None" WindowStartupLocation="CenterScreen"
         Title="WomoMemo" Width="300" Height="500" MinWidth="300" MinHeight="500"
-        FontFamily="{DynamicResource MaterialDesignFont}">
+        FontFamily="{DynamicResource MaterialDesignFont}" Closed="Window_Closed">
     <Window.Resources>
         <Style TargetType="{x:Type ScrollBar}">
             <Setter Property="Background" Value="Transparent"/>
@@ -41,7 +41,7 @@
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="32"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnNew" ToolTip="New memo" Grid.Column="0" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnNew_Click">
+            <Button x:Name="btnNew" ToolTip="New" Grid.Column="0" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnNew_Click">
                 <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
             </Button>
             <Label x:Name="lblAlert" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#1A202C" FontSize="10"/>

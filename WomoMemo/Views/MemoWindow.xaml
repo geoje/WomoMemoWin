@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" WindowStyle="None" WindowStartupLocation="CenterScreen"
         Title="WomoMemo" Width="300" Height="300"
-        FontFamily="{DynamicResource MaterialDesignFont}">
+        FontFamily="{DynamicResource MaterialDesignFont}" Activated="Window_Activated" Deactivated="Window_Deactivated">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" />
     </WindowChrome.WindowChrome>
@@ -16,7 +16,7 @@
             <RowDefinition Height="32" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" MouseDown="Grid_MouseDown" Background="White">
+        <Grid x:Name="grdHeader" Grid.Row="0" MouseDown="Grid_MouseDown">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="32"/>
@@ -24,11 +24,11 @@
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="32"/>
-            </Grid.ColumnDefinitions>
+            </Grid.ColumnDefinitions> 
             <Button x:Name="btnList" ToolTip="List" Grid.Column="0" Click="btnList_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                 <materialDesign:PackIcon Kind="Menu" Foreground="Gray" />
             </Button>
-            <Button x:Name="btnNew" ToolTip="New memo" Grid.Column="1" Click="btnNew_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+            <Button x:Name="btnNew" ToolTip="New" Grid.Column="1" Click="btnNew_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                 <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
             </Button>
             <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="3" Click="btnDelete_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
@@ -41,9 +41,11 @@
                 <materialDesign:PackIcon Kind="Close" Foreground="Gray" />
             </Button>
         </Grid>
-        <TextBox x:Name="txtTitle"   Grid.Row="1" Margin="8,0" Padding="8" Background="Transparent"
-                 materialDesign:HintAssist.Hint="Title" FontWeight="Bold" TextChanged="txt_TextChanged" />
-        <TextBox x:Name="txtContent" Grid.Row="2" Margin="8,0,8,8" Padding="8" Background="Transparent"
-                 materialDesign:HintAssist.Hint="Content" AcceptsReturn="True" TextChanged="txt_TextChanged"/>
+        <TextBox x:Name="txtTitle" Grid.Row="1" Margin="8,0" Padding="8"
+                 Background="Transparent" BorderBrush="Transparent" FontWeight="Bold"
+                 materialDesign:HintAssist.Hint="Title" TextChanged="txt_TextChanged" />
+        <TextBox x:Name="txtContent" Grid.Row="2" Margin="8,0,8,8" Padding="8"
+                 Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True"
+                 materialDesign:HintAssist.Hint="Content" TextChanged="txt_TextChanged"/>
     </Grid>
 </Window>

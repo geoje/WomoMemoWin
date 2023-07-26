@@ -20,6 +20,10 @@ namespace WomoMemo
             lstMemo.ItemsSource = App.Memos;
             UpdateControls();
         }
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            App.MainWin = null;
+        }
         public void UpdateControls()
         {
             Dispatcher.Invoke(() =>
@@ -80,15 +84,16 @@ namespace WomoMemo
             int id = (int)((Border)sender).Tag;
             foreach (var item in App.Memos)
                 if (item.Id == id)
+                {
                     if (App.MemoWins.ContainsKey(id)) App.MemoWins[id].Show();
-                    else {
+                    else
+                    {
                         App.MemoWins.Add(id, new MemoWindow(item));
                         App.MemoWins[id].Closed += (sender, e) => App.MemoWins.Remove(id);
                         App.MemoWins[id].Show();
-                        App.MemoWins[id].Focus();
                     }
+                    App.MemoWins[id].Focus();
+                }
         }
-
-        // Task
     }
 }

@@ -1,6 +1,9 @@
-﻿using System.Windows;
+﻿using System;
+using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using WomoMemo.Models;
 
 namespace WomoMemo.Views
@@ -10,14 +13,30 @@ namespace WomoMemo.Views
     /// </summary>
     public partial class MemoWindow : Window
     {
+        DateTime _lastTextChanged = DateTime.UtcNow;
+
         Memo Memo;
 
         public MemoWindow(Memo memo)
         {
             Memo = memo;
             InitializeComponent();
-            txtTitle.Text = memo.Title;
+            Title = txtTitle.Text = memo.Title;
             txtContent.Text = memo.Content;
+            Background = grdHeader.Background = new BrushConverter().ConvertFrom(Memo.Color) as SolidColorBrush;
+
+        }
+        private void Window_Activated(object sender, EventArgs e)
+        {
+            Trace.WriteLine("Activated");
+            foreach(Control control in grdHeader.Children)
+                control.Visibility = Visibility.Visible;
+        }
+        private void Window_Deactivated(object sender, EventArgs e)
+        {
+            Trace.WriteLine("Deactivated");
+            foreach (Control control in grdHeader.Children)
+                control.Visibility = Visibility.Collapsed;
         }
 
         // Header
@@ -51,7 +70,15 @@ namespace WomoMemo.Views
         // Body
         private void txt_TextChanged(object sender, TextChangedEventArgs e)
         {
+            // Sync title
+            if (((Control)sender).Name == "txtTitle") Title = txtTitle.Text;
 
+            // Throttle
+            if (DateTime.UtcNow.Subtract(_lastTextChanged).TotalSeconds >= 1)
+            {
+                
+            }
+            _lastTextChanged = DateTime.UtcNow;
         }
     }
 }
