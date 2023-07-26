@@ -1,4 +1,6 @@
-﻿namespace WomoMemo.Models
+﻿using System;
+
+namespace WomoMemo.Models
 {
     public class Memo
     {
@@ -31,6 +33,11 @@
         }
         public bool Checkbox { get; set; }
         public string UpdatedAt { get; set; }
+
+        public static Memo Empty
+        {
+            get { return new Memo(-1, "", "", "", "white", false, DateTime.UtcNow.ToString("o")); }
+        }
 
         public Memo(int id, string userId, string title, string content, string color, bool checkbox, string updatedAt)
         {

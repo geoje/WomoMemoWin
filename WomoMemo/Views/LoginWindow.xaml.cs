@@ -1,8 +1,14 @@
 ﻿using Microsoft.Web.WebView2.Core;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using WomoMemo.Models;
 
 namespace WomoMemo.Views
@@ -27,12 +33,23 @@ namespace WomoMemo.Views
         {
             List<CoreWebView2Cookie> cookieList = await webMain.CoreWebView2.CookieManager.GetCookiesAsync(Config.MemoUrl);
             var sessinoTokenCookie = cookieList.Find(cookie => cookie.Name.Equals(Config.SessionTokenName));
-            if (sessinoTokenCookie != null)
-            {
-                Config.SessionTokenValue = sessinoTokenCookie.Value;
-                Config.Save();
-                Close();
-            }
+            if (sessinoTokenCookie == null) return;
+
+            // Save sessionToken to file
+            Config.SessionTokenValue = sessinoTokenCookie.Value;
+            Config.Save();
+
+            // Save cookie to App
+            App.Handler.CookieContainer = new CookieContainer();
+            App.Handler.CookieContainer.Add(new Uri(Config.MemoUrl), new Cookie(Config.SessionTokenName, Config.SessionTokenValue));
+
+            // Get and Download user profile
+            await App.GetUserProfile();
+            await App.DownloadUserProfileImage();
+
+            // Update controls and close window
+            App.MainWin?.UpdateControls();
+            Close();
         }
     }
 }
