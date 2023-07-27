@@ -1,9 +1,25 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WomoMemo.Models
 {
     public class Memo
     {
+        public static Dictionary<string, string> COLORS = new Dictionary<string, string>()
+        {
+            { "white" , "#FFF" },
+            { "gray" , "#EDF2F7" },
+            { "red" , "#FED7D7" },
+            { "orange" , "#FEEBC8" },
+            { "yellow" , "#FEFCBF" },
+            { "green" , "#C6F6D5" },
+            { "teal" , "#B2F5EA" },
+            { "blue" , "#BEE3F8" },
+            { "cyan" , "#C4F1F9" },
+            { "purple" , "#E9D8FD" },
+            { "pink" , "#FED7E2" }
+        };
+
         public int Id { get; set; }
         public string UserId { get; set; }
         public string Title { get; set; }
@@ -11,20 +27,7 @@ namespace WomoMemo.Models
         public string Color { get; set; }
         public string BgColor
         {
-            get {
-                return
-                    Color == "white" ? "#FFF" :
-                    Color == "gray" ? "#EDF2F7" :
-                    Color == "red" ? "#FED7D7" :
-                    Color == "orange" ? "#FEEBC8" :
-                    Color == "yellow" ? "#FEFCBF" :
-                    Color == "green" ? "#C6F6D5" :
-                    Color == "teal" ? "#B2F5EA" :
-                    Color == "blue" ? "#BEE3F8" :
-                    Color == "cyan" ? "#C4F1F9" :
-                    Color == "purple" ? "#E9D8FD" :
-                    Color == "pink" ? "#FED7E2" : "#FFF";
-            }
+            get { return COLORS.ContainsKey(Color) ? COLORS[Color] : COLORS["white"]; }
         }
         public string BorderColor
         {

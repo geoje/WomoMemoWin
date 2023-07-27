@@ -133,6 +133,43 @@ namespace WomoMemo
                 UpdateErrorMessage("Error on downloading user profile");
             }
         }
+        public static async Task CreateNewMemo()
+        {
+            if (Memos.Count > 0 && Memos[0].Id == Memo.Empty.Id) return;
+
+            MemoWindow memoWindow = new MemoWindow(Memo.Empty);
+            Memos.Insert(0, Memo.Empty);
+            memoWindow.Show();
+
+            try
+            {
+                JObject jObj = new JObject
+                {
+                    { "title", Memo.Empty.Title },
+                    { "content", Memo.Empty.Content },
+                    { "color", Memo.Empty.Color },
+                    { "checkBox", Memo.Empty.Checkbox },
+                };
+                StringContent content = new StringContent(jObj.ToString(Newtonsoft.Json.Formatting.None));
+
+                var response = await Client.PostAsync("/api/memos", content);
+                response.EnsureSuccessStatusCode();
+                JObject result = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+                memoWindow.Memo.Id = result["id"]?.ToObject<int>() ?? Memo.Empty.Id;
+                if (memoWindow.Memo.Id == Memo.Empty.Id) throw new Exception();
+
+                MemoWins.Add(memoWindow.Memo.Id, memoWindow);
+                UpdateErrorMessage("Error on posting memo", true);
+            }
+            catch (Exception ex)
+            {
+                if (Memos.Count > 0 && Memos[0].Id == Memo.Empty.Id) Memos.RemoveAt(0);
+                memoWindow.Close();
+                Trace.TraceError(ex.ToString());
+                UpdateErrorMessage("Error on posting memo");
+            }
+        }
         async void UpdateDataFromServer()
         {
             for (; ; Thread.Sleep(1000))
@@ -159,8 +196,9 @@ namespace WomoMemo
                         foreach (var item in result.Children())
                         {
                             int memoId = item["id"]?.ToObject<int>() ?? Memo.Empty.Id;
+                            if (memoId == Memo.Empty.Id) continue;
                             bool isMemoWinValid = MemoWins.ContainsKey(memoId) && MemoWins[memoId] != null;
-                            bool isMemoWinUpdating = isMemoWinValid && MemoWins[memoId].PostMemoTimer != null;
+                            bool isMemoWinUpdating = isMemoWinValid && MemoWins[memoId].PutMemoTimer != null;
 
                             // Add memo from server or local
                             var memo =

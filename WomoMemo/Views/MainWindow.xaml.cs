@@ -5,6 +5,7 @@ using WomoMemo.Views;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
+using System.Diagnostics;
 
 namespace WomoMemo
 {
@@ -42,9 +43,9 @@ namespace WomoMemo
         {
             if (e.ChangedButton == MouseButton.Left) DragMove();
         }
-        private void btnNew_Click(object sender, RoutedEventArgs e)
+        private async void btnNew_Click(object sender, RoutedEventArgs e)
         {
-
+            await App.CreateNewMemo();
         }
         private void btnUser_Click(object sender, RoutedEventArgs e)
         {
@@ -82,11 +83,10 @@ namespace WomoMemo
             for (int i = 0; i < App.Memos.Count; i++)
                 if (App.Memos[i].Id == id)
                 {
-                    if (App.MemoWins.ContainsKey(id)) App.MemoWins[id].Show();
+                    if (App.MemoWins.ContainsKey(id)) { App.MemoWins[id].Show(); Trace.WriteLine(App.MemoWins[id].ToString()); }
                     else
                     {
                         App.MemoWins.Add(id, new MemoWindow(App.Memos[i]));
-                        App.MemoWins[id].Closed += (sender, e) => App.MemoWins.Remove(id);
                         App.MemoWins[id].Show();
                     }
                     App.MemoWins[id].Focus();

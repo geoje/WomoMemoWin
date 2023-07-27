@@ -14,7 +14,7 @@ namespace WomoMemo.Views
 {
     public partial class MemoWindow : Window
     {
-        public Timer? PostMemoTimer;
+        public Timer? PutMemoTimer;
 
         public Memo Memo;
 
@@ -23,6 +23,18 @@ namespace WomoMemo.Views
             InitializeComponent();
             Memo = memo;
             UpdateMemo(memo);
+
+            int i = 0;
+            var colorKeyList = Memo.COLORS.Keys.ToArray();
+            foreach (Button btnCol in pnlColor.Children)
+            {
+                string colorKey = colorKeyList[i++];
+                btnCol.Tag = colorKey;
+                btnCol.Background = new BrushConverter().ConvertFrom(Memo.COLORS[colorKey]) as SolidColorBrush;
+                btnCol.BorderThickness = new Thickness();
+                btnCol.Margin = new Thickness(2);
+                btnCol.Click += memoChanged;
+            }
         }
         private void Window_Activated(object sender, EventArgs e)
         {
@@ -33,6 +45,10 @@ namespace WomoMemo.Views
         {
             foreach (Control control in grdHeader.Children)
                 control.Visibility = Visibility.Collapsed;
+        }
+        private void window_Closed(object sender, EventArgs e)
+        {
+            App.MemoWins.Remove(Memo.Id);
         }
 
         public void UpdateMemo(Memo memo)
@@ -54,9 +70,9 @@ namespace WomoMemo.Views
             App.MainWin.Show();
             App.MainWin.Focus();
         }
-        private void btnNew_Click(object sender, RoutedEventArgs e)
+        private async void btnNew_Click(object sender, RoutedEventArgs e)
         {
-
+            await App.CreateNewMemo();
         }
         private async void btnDelete_Click(object sender, RoutedEventArgs e)
         {
@@ -81,21 +97,25 @@ namespace WomoMemo.Views
                 App.UpdateErrorMessage("Error on deleting memo");
             }
         }
-        private void btnColor_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }
 
         // Body
-        private void txt_TextChanged(object sender, TextChangedEventArgs e)
+        private void memoChanged(object sender, EventArgs e)
         {
-            // Sync title and Content
-            if (((Control)sender).Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
-            else Memo.Content = txtContent.Text;
+            // Update my memo instance
+            Control sndCon = (Control)sender;
+            if (sndCon.Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
+            else if (sndCon.Name == "txtContent") Memo.Content = txtContent.Text;
+            else if (((WrapPanel)sndCon.Parent).Name == "pnlColor")
+            {
+                Memo.Color = (string)sndCon.Tag;
+                Background = grdHeader.Background = sndCon.Background;
+            }
+
+            // Update App memo
             Memo? appMemo = App.Memos.Where(memo => memo.Id == Memo.Id).FirstOrDefault();
             if (appMemo != null)
             {
@@ -104,9 +124,9 @@ namespace WomoMemo.Views
                 App.Memos.RemoveAt(idx + 1);
             }
 
-            // Post memo to server
-            if (PostMemoTimer == null)
-                PostMemoTimer = new Timer(async _ =>
+            // Put memo to server
+            if (PutMemoTimer == null)
+                PutMemoTimer = new Timer(async _ =>
                 {
                     try
                     {
@@ -120,20 +140,20 @@ namespace WomoMemo.Views
                         StringContent content = new StringContent(jObj.ToString(Newtonsoft.Json.Formatting.None));
 
                         (await App.Client.PutAsync("/api/memos/" + Memo.Id, content)).EnsureSuccessStatusCode();
-                        App.UpdateErrorMessage("Error on posting memo", true);
+                        App.UpdateErrorMessage("Error on putting memo", true);
                     }
                     catch (Exception ex)
                     {
                         Trace.TraceError(ex.ToString());
-                        App.UpdateErrorMessage("Error on posting memo");
+                        App.UpdateErrorMessage("Error on putting memo");
                     }
 
-                    PostMemoTimer?.Dispose();
-                    PostMemoTimer = null;
+                    PutMemoTimer?.Dispose();
+                    PutMemoTimer = null;
                 }, null, 1000, Timeout.Infinite);
             // Throttle
             else
-                PostMemoTimer.Change(1000, Timeout.Infinite);
+                PutMemoTimer.Change(1000, Timeout.Infinite);
         }
     }
 }
