@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace WomoMemo
 {
@@ -26,8 +27,6 @@ namespace WomoMemo
         {
             Dispatcher.Invoke(() =>
             {
-                lblAlert.Content = App.ErrorMessage;
-
                 btnUser.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Collapsed : Visibility.Visible;
                 btnLogin.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Visible : Visibility.Collapsed;
                 imgUser.ImageSource = User.Image;
@@ -35,6 +34,14 @@ namespace WomoMemo
                 imgProvider.Source = new BitmapImage(new Uri($"/Resources/{User.Provider}.png", UriKind.RelativeOrAbsolute));
                 txtName.Text = User.Name;
                 txtEmail.Text = User.Email;
+            });
+        }
+        public void ShowAlert(string message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (snkAlert.MessageQueue is { } messageQueue)
+                    Task.Factory.StartNew(() => messageQueue.Enqueue(message));
             });
         }
 
@@ -46,6 +53,9 @@ namespace WomoMemo
         private async void btnNew_Click(object sender, RoutedEventArgs e)
         {
             await App.CreateNewMemo();
+        }
+        private void btnUpdate_Click(object sender, RoutedEventArgs e)
+        {
         }
         private void btnUser_Click(object sender, RoutedEventArgs e)
         {

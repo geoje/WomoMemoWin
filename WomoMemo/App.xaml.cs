@@ -28,7 +28,6 @@ namespace WomoMemo
         public static HttpClientHandler Handler = new HttpClientHandler();
         public static HttpClient Client = new HttpClient(Handler) { BaseAddress = new Uri(Config.MemoUrl) };
         public static ObservableCollection<Memo> Memos = new ObservableCollection<Memo>();
-        public static string ErrorMessage = "";
 
         public Task? MemoTask;
 
@@ -59,7 +58,7 @@ namespace WomoMemo
             }
 
             // Start to sync data
-            Task MemoTask = Task.Run(UpdateDataFromServer);
+            MemoTask = Task.Run(UpdateDataFromServer);
         }
         protected override void OnExit(ExitEventArgs e)
         {
@@ -67,51 +66,14 @@ namespace WomoMemo
             base.OnExit(e);
         }
 
-        public static void UpdateErrorMessage(string message, bool remove = false)
-        {
-            ErrorMessage = remove ?
-                (message == ErrorMessage || string.IsNullOrEmpty(ErrorMessage) ? "" : ErrorMessage) :
-                (message);
-        }
-        public static async Task GetUserProfile()
-        {
-            // Get user profile
-            try
-            {
-                // Request
-                var response = await Client.GetAsync("/api/auth/session");
-                response.EnsureSuccessStatusCode();
-
-                // Parse json to User instance
-                JToken result = JObject.Parse(await response.Content.ReadAsStringAsync())["user"] ?? JObject.Parse("{}");
-                User.Id = result["id"]?.ToString() ?? "";
-                UpdateErrorMessage("Error on getting profile", true);
-
-                if (!string.IsNullOrEmpty(User.Id))
-                {
-                    User.Name = result["name"]?.ToString() ?? "";
-                    User.Email = result["email"]?.ToString() ?? "";
-                    User.ImageUrl = result["image"]?.ToString() ?? "";
-                    User.Provider = result["provider"]?.ToString() ?? "";
-                    MainWin?.UpdateControls();
-                }
-                UpdateErrorMessage("Invalid token. Please login again", !string.IsNullOrEmpty(User.Id));
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError(ex.ToString());
-                UpdateErrorMessage("Error on getting profile");
-            }
-        }
-        public static async Task DownloadUserProfileImage()
+        public static async Task GetLastestVersion()
         {
             try
             {
-                using (var client = new HttpClient() { BaseAddress = new Uri(User.ImageUrl) })
+                using (var client = new HttpClient() { BaseAddress = new Uri("https://github.com/geoje/WomoMemoWin/releases/latest") })
                 {
                     var response = await client.GetAsync(User.ImageUrl);
                     response.EnsureSuccessStatusCode();
-                    UpdateErrorMessage("Error on downloading user profile", true);
 
                     if (MainWin != null)
                         MainWin.Dispatcher.Invoke(() =>
@@ -130,7 +92,66 @@ namespace WomoMemo
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
-                UpdateErrorMessage("Error on downloading user profile");
+                MainWin?.ShowAlert("Error on downloading user profile");
+            }
+        }
+        public static async Task GetUserProfile()
+        {
+            // Get user profile
+            try
+            {
+                // Request
+                var response = await Client.GetAsync("/api/auth/session");
+                response.EnsureSuccessStatusCode();
+
+                // Parse json to User instance
+                JToken result = JObject.Parse(await response.Content.ReadAsStringAsync())["user"] ?? JObject.Parse("{}");
+                User.Id = result["id"]?.ToString() ?? "";
+
+                if (!string.IsNullOrEmpty(User.Id))
+                {
+                    User.Name = result["name"]?.ToString() ?? "";
+                    User.Email = result["email"]?.ToString() ?? "";
+                    User.ImageUrl = result["image"]?.ToString() ?? "";
+                    User.Provider = result["provider"]?.ToString() ?? "";
+                    MainWin?.UpdateControls();
+                }
+                else
+                    MainWin?.ShowAlert("Invalid token. Please login again");
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.ToString());
+                MainWin?.ShowAlert("Error on getting profile");
+            }
+        }
+        public static async Task DownloadUserProfileImage()
+        {
+            try
+            {
+                using (var client = new HttpClient() { BaseAddress = new Uri(User.ImageUrl) })
+                {
+                    var response = await client.GetAsync(User.ImageUrl);
+                    response.EnsureSuccessStatusCode();
+
+                    if (MainWin != null)
+                        MainWin.Dispatcher.Invoke(() =>
+                        {
+                            byte[] imageBytes = response.Content.ReadAsByteArrayAsync().Result;
+                            User.Image = new BitmapImage();
+                            User.Image.BeginInit();
+                            User.Image.StreamSource = new System.IO.MemoryStream(imageBytes);
+                            User.Image.CacheOption = BitmapCacheOption.OnLoad;
+                            User.Image.EndInit();
+                        });
+
+                    MainWin?.UpdateControls();
+                }
+            }
+            catch (Exception ex)
+            {
+                Trace.TraceError(ex.ToString());
+                MainWin?.ShowAlert("Error on downloading user profile");
             }
         }
         public static async Task CreateNewMemo()
@@ -160,14 +181,13 @@ namespace WomoMemo
                 if (memoWindow.Memo.Id == Memo.Empty.Id) throw new Exception();
 
                 MemoWins.Add(memoWindow.Memo.Id, memoWindow);
-                UpdateErrorMessage("Error on posting memo", true);
             }
             catch (Exception ex)
             {
                 if (Memos.Count > 0 && Memos[0].Id == Memo.Empty.Id) Memos.RemoveAt(0);
                 memoWindow.Close();
                 Trace.TraceError(ex.ToString());
-                UpdateErrorMessage("Error on posting memo");
+                MainWin?.ShowAlert("Error on posting memo");
             }
         }
         async void UpdateDataFromServer()
@@ -224,14 +244,11 @@ namespace WomoMemo
                             MemoWins.Remove(key);
                         }
                     });
-
-                    // Clear error
-                    UpdateErrorMessage("Error on getting memos", true);
                 }
                 catch (Exception ex)
                 {
                     Trace.TraceError(ex.ToString());
-                    UpdateErrorMessage("Error on getting memos");
+                    MainWin?.ShowAlert("Error on getting memos");
                 }
 
                 // Update Controls

@@ -88,13 +88,12 @@ namespace WomoMemo.Views
 
                 await App.Client.DeleteAsync("/api/memos/" + Memo.Id);
 
-                App.UpdateErrorMessage("Error on deleting memo", true);
                 Close();
             }
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
-                App.UpdateErrorMessage("Error on deleting memo");
+                App.MainWin?.ShowAlert("Error on deleting memo");
             }
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -140,12 +139,11 @@ namespace WomoMemo.Views
                         StringContent content = new StringContent(jObj.ToString(Newtonsoft.Json.Formatting.None));
 
                         (await App.Client.PutAsync("/api/memos/" + Memo.Id, content)).EnsureSuccessStatusCode();
-                        App.UpdateErrorMessage("Error on putting memo", true);
                     }
                     catch (Exception ex)
                     {
                         Trace.TraceError(ex.ToString());
-                        App.UpdateErrorMessage("Error on putting memo");
+                        App.MainWin?.ShowAlert("Error on putting memo");
                     }
 
                     PutMemoTimer?.Dispose();
