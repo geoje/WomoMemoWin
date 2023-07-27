@@ -8,9 +8,6 @@ using System;
 
 namespace WomoMemo
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
@@ -82,13 +79,13 @@ namespace WomoMemo
         private void Border_MouseUp(object sender, MouseButtonEventArgs e)
         {
             int id = (int)((Border)sender).Tag;
-            foreach (var item in App.Memos)
-                if (item.Id == id)
+            for (int i = 0; i < App.Memos.Count; i++)
+                if (App.Memos[i].Id == id)
                 {
                     if (App.MemoWins.ContainsKey(id)) App.MemoWins[id].Show();
                     else
                     {
-                        App.MemoWins.Add(id, new MemoWindow(item));
+                        App.MemoWins.Add(id, new MemoWindow(App.Memos[i]));
                         App.MemoWins[id].Closed += (sender, e) => App.MemoWins.Remove(id);
                         App.MemoWins[id].Show();
                     }

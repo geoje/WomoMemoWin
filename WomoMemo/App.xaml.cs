@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -149,18 +150,41 @@ namespace WomoMemo
                     // Parse json to memo array
                     JArray result = JArray.Parse(await response.Content.ReadAsStringAsync());
 
+                    // Update memos
                     Dispatcher.Invoke(() =>
                     {
+                        ArrayList ExistsMemos = new ArrayList();
+
                         Memos.Clear();
                         foreach (var item in result.Children())
-                            Memos.Add(new Memo(
-                                item["id"]?.ToObject<int>() ?? 0,
-                                item["userId"]?.ToString() ?? "",
-                                item["title"]?.ToString() ?? "",
-                                item["content"]?.ToString() ?? "",
-                                item["color"]?.ToString() ?? "",
-                                item["checkbox"]?.ToObject<bool>() ?? false,
-                                item["updatedAt"]?.ToString() ?? ""));
+                        {
+                            int memoId = item["id"]?.ToObject<int>() ?? Memo.Empty.Id;
+                            bool isMemoWinValid = MemoWins.ContainsKey(memoId) && MemoWins[memoId] != null;
+                            bool isMemoWinUpdating = isMemoWinValid && MemoWins[memoId].PostMemoTimer != null;
+
+                            // Add memo from server or local
+                            var memo =
+                            isMemoWinValid && isMemoWinUpdating ?
+                            MemoWins[memoId].Memo :
+                            new Memo(memoId,
+                            item["userId"]?.ToString() ?? Memo.Empty.UserId,
+                            item["title"]?.ToString() ?? Memo.Empty.Title,
+                            item["content"]?.ToString() ?? Memo.Empty.Content,
+                            item["color"]?.ToString() ?? Memo.Empty.Color,
+                            item["checkbox"]?.ToObject<bool>() ?? Memo.Empty.Checkbox,
+                            item["updatedAt"]?.ToString() ?? Memo.Empty.UpdatedAt);
+                            Memos.Add(memo);
+                            ExistsMemos.Add(memoId);
+                            if (isMemoWinValid && !isMemoWinUpdating)
+                                MemoWins[memoId].UpdateMemo(memo);
+                        }
+
+                        // Close and delete memo
+                        foreach (int key in MemoWins.Keys.Where(key => !ExistsMemos.Contains(key)))
+                        {
+                            MemoWins[key].Close();
+                            MemoWins.Remove(key);
+                        }
                     });
 
                     // Clear error

@@ -8,28 +8,27 @@ namespace WomoMemo.Models
         public string UserId { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
-        private string color = "";
-        public string Color
+        public string Color { get; set; }
+        public string BgColor
         {
-            set { color = value; }
             get {
                 return
-                    color == "white" ? "#FFF" :
-                    color == "gray" ? "#EDF2F7" :
-                    color == "red" ? "#FED7D7" :
-                    color == "orange" ? "#FEEBC8" :
-                    color == "yellow" ? "#FEFCBF" :
-                    color == "green" ? "#C6F6D5" :
-                    color == "teal" ? "#B2F5EA" :
-                    color == "blue" ? "#BEE3F8" :
-                    color == "cyan" ? "#C4F1F9" :
-                    color == "purple" ? "#E9D8FD" :
-                    color == "pink" ? "#FED7E2" : "#FFF";
+                    Color == "white" ? "#FFF" :
+                    Color == "gray" ? "#EDF2F7" :
+                    Color == "red" ? "#FED7D7" :
+                    Color == "orange" ? "#FEEBC8" :
+                    Color == "yellow" ? "#FEFCBF" :
+                    Color == "green" ? "#C6F6D5" :
+                    Color == "teal" ? "#B2F5EA" :
+                    Color == "blue" ? "#BEE3F8" :
+                    Color == "cyan" ? "#C4F1F9" :
+                    Color == "purple" ? "#E9D8FD" :
+                    Color == "pink" ? "#FED7E2" : "#FFF";
             }
         }
         public string BorderColor
         {
-            get { return color == "white" ? "#CBD5E0" : Color; }
+            get { return Color == "white" ? "#CBD5E0" : BgColor; }
         }
         public bool Checkbox { get; set; }
         public string UpdatedAt { get; set; }

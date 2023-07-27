@@ -1,14 +1,9 @@
 ﻿using Microsoft.Web.WebView2.Core;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web;
 using System.Windows;
-using System.Windows.Media.Imaging;
 using WomoMemo.Models;
 
 namespace WomoMemo.Views
