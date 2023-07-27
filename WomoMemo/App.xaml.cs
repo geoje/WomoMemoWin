@@ -51,7 +51,7 @@ namespace WomoMemo
             // Init registry
             string appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemoWin";
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            key?.SetValue(appName, Assembly.GetExecutingAssembly().Location);
+            key?.SetValue(appName, Process.GetCurrentProcess().MainModule?.FileName ?? "");
 
             // Get profile if token available
             Config.Load();
