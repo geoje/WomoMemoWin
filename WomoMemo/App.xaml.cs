@@ -8,10 +8,12 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WomoMemo.Models;
@@ -45,6 +47,11 @@ namespace WomoMemo
 
             // Run parent's code
             base.OnStartup(e);
+
+            // Init registry
+            string appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemoWin";
+            var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            key?.SetValue(appName, Assembly.GetExecutingAssembly().Location);
 
             // Get profile if token available
             Config.Load();
