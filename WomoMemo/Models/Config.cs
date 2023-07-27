@@ -7,6 +7,7 @@ namespace WomoMemo.Models
 {
     public class Config
     {
+        public readonly static string GITHUB_URL = "https://github.com/geoje/WomoMemoWin";
 #if DEBUG
         public static string MemoUrl = "http://localhost:3000";
         public static string AuthUrl = "http://localhost:3001";

@@ -43,6 +43,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -92,6 +108,16 @@
         {
             "LaunchCondition"
             {
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_4F903C217EC94109A09B06ADC9375811"
+                {
+                "Name" = "8:.NET Core"
+                "Message" = "8:[VSDNETCOREMSG]"
+                "AllowLaterVersions" = "11:FALSE"
+                "InstallUrl" = "8:https://dotnet.microsoft.com/download/dotnet-core/[NetCoreVerMajorDotMinor]"
+                "IsNETCore" = "11:TRUE"
+                "Architecture" = "2:0"
+                "Runtime" = "2:0"
+                }
             }
         }
         "File"
@@ -171,9 +197,9 @@
         "Product"
         {
         "Name" = "8:Microsoft Visual Studio"
-        "ProductName" = "8:Setup"
+        "ProductName" = "8:WomoMemo"
         "ProductCode" = "8:{E29A27C4-09E2-4DFD-BDA1-3CD7B99DCFEA}"
-        "PackageCode" = "8:{EB6F4E5A-1A50-4CB5-9B42-1E528C9C8B2B}"
+        "PackageCode" = "8:{7F7CABC9-5C93-4CAC-81AD-3693D9DBAB56}"
         "UpgradeCode" = "8:{856D1A3B-5F86-49DE-98A5-935AFCB2A2A2}"
         "AspNetVersion" = "8:"
         "RestartWWWService" = "11:FALSE"
@@ -340,7 +366,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_F17AEA0A310E49C4BAAEBB78208B054F"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:진행률"
+                    "DisplayName" = "8:Progress"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdProgressDlg.wid"
@@ -384,7 +410,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_5EDFF1AD345248C08AF047CD42DDDB52"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:환영"
+                    "DisplayName" = "8:Welcome"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdWelcomeDlg.wid"
@@ -432,7 +458,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_C2D182BA2E814689A7E6BB1700E0E423"
                     {
                     "Sequence" = "3:200"
-                    "DisplayName" = "8:설치 폴더"
+                    "DisplayName" = "8:Installation Folder"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdFolderDlg.wid"
@@ -467,7 +493,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_D47BF7F3DA7D4A63ADBCBD20449E3297"
                     {
                     "Sequence" = "3:300"
-                    "DisplayName" = "8:설치 확인"
+                    "DisplayName" = "8:Confirm Installation"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdConfirmDlg.wid"
@@ -498,7 +524,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_E0DDAB7C923B4C059ABCE7FF69C1F00B"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:마침"
+                    "DisplayName" = "8:Finished"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFinishedDlg.wid"
@@ -529,7 +555,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_04E1C57EAA1A4B85B5BC76FBE33C391F"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:진행률"
+                    "DisplayName" = "8:Progress"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminProgressDlg.wid"
@@ -579,7 +605,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_707893DC843D4517BF53EFF758A9A7FA"
                     {
                     "Sequence" = "3:300"
-                    "DisplayName" = "8:설치 확인"
+                    "DisplayName" = "8:Confirm Installation"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminConfirmDlg.wid"
@@ -601,7 +627,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_8B1E1331AC2D475996405F0F28AA5047"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:환영"
+                    "DisplayName" = "8:Welcome"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminWelcomeDlg.wid"
@@ -649,7 +675,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_A3338FCE70924C20A801BA5812DDD4AC"
                     {
                     "Sequence" = "3:200"
-                    "DisplayName" = "8:설치 폴더"
+                    "DisplayName" = "8:Installation Folder"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdAdminFolderDlg.wid"
@@ -680,7 +706,7 @@
                     "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_55CD429F7439466F82228353FC639767"
                     {
                     "Sequence" = "3:100"
-                    "DisplayName" = "8:마침"
+                    "DisplayName" = "8:Finished"
                     "UseDynamicProperties" = "11:TRUE"
                     "IsDependency" = "11:FALSE"
                     "SourcePath" = "8:<VsdDialogDir>\\VsdFinishedDlg.wid"
@@ -722,7 +748,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E4B8C695C9E84CEB9C9030B853C7279C"
             {
-            "SourcePath" = "8:..\\WomoMemo\\obj\\Debug\\net6.0-windows\\apphost.exe"
+            "SourcePath" = "8:..\\WomoMemo\\obj\\Release\\net6.0-windows\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_A58A6C13EAC740F9A5166D880C04A1E6"

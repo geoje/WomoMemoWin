@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -66,35 +68,34 @@ namespace WomoMemo
             base.OnExit(e);
         }
 
-        public static async Task GetLastestVersion()
+        public static int[] GetCurrentVersion()
+        {
+            Version currentVerObj = typeof(MainWindow).Assembly.GetName().Version ?? Version.Parse("1.0.0");
+            return new int[3] { currentVerObj.Major, currentVerObj.Minor, currentVerObj.Build };
+        }
+        public static async Task<int[]> GetLatestVersion()
         {
             try
             {
-                using (var client = new HttpClient() { BaseAddress = new Uri("https://github.com/geoje/WomoMemoWin/releases/latest") })
+                using (var client = new HttpClient() { BaseAddress = new Uri(Config.GITHUB_URL + "/releases/latest") })
                 {
                     var response = await client.GetAsync(User.ImageUrl);
                     response.EnsureSuccessStatusCode();
 
-                    if (MainWin != null)
-                        MainWin.Dispatcher.Invoke(() =>
-                        {
-                            byte[] imageBytes = response.Content.ReadAsByteArrayAsync().Result;
-                            User.Image = new BitmapImage();
-                            User.Image.BeginInit();
-                            User.Image.StreamSource = new System.IO.MemoryStream(imageBytes);
-                            User.Image.CacheOption = BitmapCacheOption.OnLoad;
-                            User.Image.EndInit();
-                        });
-
-                    MainWin?.UpdateControls();
+                    string latestVerStr = Regex.Match(await response.Content.ReadAsStringAsync(), @"(?<=Release )(\d|\.)+").Value;
+                    if (string.IsNullOrEmpty(latestVerStr)) latestVerStr = "1.0.0";
+                    int[] latestVer = latestVerStr.Split('.').Select(s => int.Parse(s)).ToArray();
+                    return latestVer;
                 }
             }
             catch (Exception ex)
             {
                 Trace.TraceError(ex.ToString());
-                MainWin?.ShowAlert("Error on downloading user profile");
+                MainWin?.ShowAlert("Error on getting latest version");
             }
+            return new int[] { 1, 0, 0 };
         }
+        
         public static async Task GetUserProfile()
         {
             // Get user profile

@@ -1,7 +1,9 @@
 ﻿using Microsoft.Web.WebView2.Core;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
+using System.Net.Http;
 using System.Web;
 using System.Windows;
 using WomoMemo.Models;
@@ -35,8 +37,10 @@ namespace WomoMemo.Views
             Config.Save();
 
             // Save cookie to App
+            App.Handler = new HttpClientHandler();
             App.Handler.CookieContainer = new CookieContainer();
             App.Handler.CookieContainer.Add(new Uri(Config.MemoUrl), new Cookie(Config.SessionTokenName, Config.SessionTokenValue));
+            App.Client = new HttpClient(App.Handler) { BaseAddress = new Uri(Config.MemoUrl) };
 
             // Get and Download user profile
             await App.GetUserProfile();

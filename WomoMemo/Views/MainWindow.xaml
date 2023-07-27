@@ -45,8 +45,8 @@
             <Button x:Name="btnNew" ToolTip="New" Grid.Column="0" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnNew_Click">
                 <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
             </Button>
-            <Button x:Name="btnUpdate" ToolTip="Update" Grid.Column="2" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnUpdate_Click">
-                <materialDesign:PackIcon Kind="Update" Foreground="Orange" />
+            <Button x:Name="btnUpdate" ToolTip="Update" Grid.Column="2" Padding="8" Style="{StaticResource MaterialDesignFlatButton}" Click="btnUpdate_Click"  Visibility="Collapsed">
+                <materialDesign:PackIcon Kind="Update" Foreground="Orange"/>
             </Button>
             <Button x:Name="btnUser" ToolTip="User" Grid.Column="3" Padding="4" Style="{StaticResource MaterialDesignFlatButton}" Click="btnUser_Click">
                 <Button.Content>
