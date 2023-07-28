@@ -60,7 +60,7 @@ namespace WomoMemo
             }
 
             // Start to sync data
-            MemoTask = Task.Run(UpdateDataFromServer);
+            Task.Run(UpdateDataFromServer);
 
             // Open all memo windows
             Config.OpenedMemos.ForEach(jObj => {
