@@ -80,11 +80,11 @@ namespace WomoMemo
             for (int i = 0; i < App.Memos.Count; i++)
                 if (App.Memos[i].Id == id)
                 {
-                    if (App.MemoWins.ContainsKey(id)) { App.MemoWins[id].Show(); Trace.WriteLine(App.MemoWins[id].ToString()); }
+                    if (App.MemoWins.ContainsKey(id)) App.MemoWins[id].Show();
                     else
                     {
-                        App.MemoWins.Add(id, new MemoWindow(App.Memos[i]));
-                        App.MemoWins[id].Show();
+                        new MemoWindow(App.Memos[i]).Show();
+                        Config.Save();
                     }
                     App.MemoWins[id].Focus();
                 }

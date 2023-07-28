@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" WindowStyle="None" WindowStartupLocation="CenterScreen"
-        Title="WomoMemo" Width="300" Height="300"
-        FontFamily="{DynamicResource MaterialDesignFont}" Activated="Window_Activated" Deactivated="Window_Deactivated" Closed="window_Closed">
+        Title="WomoMemo" Width="300" Height="300" MinWidth="200" MinHeight="100"
+        FontFamily="{DynamicResource MaterialDesignFont}" Deactivated="window_Deactivated" Loaded="window_Loaded" Closing="window_Closing" Activated="window_Activated" SizeChanged="window_SizeChanged">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" />
     </WindowChrome.WindowChrome>
@@ -33,7 +33,7 @@
                 <RowDefinition Height="32" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid x:Name="grdHeader" Grid.Row="0" MouseDown="Grid_MouseDown">
+            <Grid x:Name="grdHeader" Grid.Row="0" MouseDown="grdHeader_MouseDown" MouseUp="grdHeader_MouseUp">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="32"/>
                     <ColumnDefinition Width="32"/>
@@ -63,8 +63,8 @@
                  Background="Transparent" BorderBrush="Transparent" FontWeight="Bold"
                  materialDesign:HintAssist.Hint="Title" TextChanged="memoChanged" />
             <TextBox x:Name="txtContent" Grid.Row="2" Margin="8,0,8,8" Padding="8"
-                 Background="Transparent" BorderBrush="Transparent" AcceptsReturn="True"
-                 materialDesign:HintAssist.Hint="Content" TextChanged="memoChanged"/>
+                 Background="Transparent" BorderBrush="Transparent" TextWrapping="Wrap" AcceptsReturn="True"
+                 materialDesign:HintAssist.Hint="Content" TextChanged="memoChanged" VerticalScrollBarVisibility="Auto"/>
         </Grid>
     </materialDesign:DrawerHost>
 </Window>
