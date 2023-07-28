@@ -44,8 +44,10 @@ namespace WomoMemo
         {
             await CheckUpdateAndDownload();
         }
-        private void btnUser_Click(object sender, RoutedEventArgs e)
+        private async void btnUser_Click(object sender, RoutedEventArgs e)
         {
+            if (User.Id == "") await App.GetUserProfile();
+            if (User.Image == null) await App.DownloadUserProfileImage();
             btnUser.ContextMenu.PlacementTarget = btnUser;
             btnUser.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
             btnUser.ContextMenu.IsOpen = true;

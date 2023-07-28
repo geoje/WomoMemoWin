@@ -28,8 +28,6 @@ namespace WomoMemo
         public static HttpClient Client = new HttpClient(Handler) { BaseAddress = new Uri(Config.MemoUrl) };
         public static ObservableCollection<Memo> Memos = new ObservableCollection<Memo>();
 
-        public Task? MemoTask;
-
         protected override void OnStartup(StartupEventArgs e)
         {
             // Execute single process
@@ -85,7 +83,6 @@ namespace WomoMemo
         }
         protected override void OnExit(ExitEventArgs e)
         {
-            MemoTask?.Dispose();
             base.OnExit(e);
         }
 

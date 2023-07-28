@@ -11,10 +11,12 @@ namespace WomoMemo.Models
     {
         public readonly static string GITHUB_URL = "https://github.com/geoje/WomoMemoWin";
 #if DEBUG
+        readonly static string ConfigFilename = "config.dev.json";
         public readonly static string MemoUrl = "http://localhost:3000";
         public readonly static string AuthUrl = "http://localhost:3001";
         public readonly static string SessionTokenName = "next-auth.session-token";
 #else
+        readonly static string ConfigFilename = "config.json";
         public readonly static string MemoUrl = "https://memo.womosoft.com";
         public readonly static string AuthUrl = "https://www.womosoft.com";
         public readonly static string SessionTokenName = "__Secure-next-auth.session-token";
@@ -33,20 +35,20 @@ namespace WomoMemo.Models
         }
         public static void Load()
         {
-            if (!File.Exists(GetDataPath("config.json"))) return;
+            if (!File.Exists(GetDataPath(ConfigFilename))) return;
 
-            JObject config = JObject.Parse(File.ReadAllText(GetDataPath("config.json")));
-            SessionTokenValue = config[SessionTokenName]?.ToString() ?? string.Empty;
+            JObject config = JObject.Parse(File.ReadAllText(GetDataPath(ConfigFilename)));
+            SessionTokenValue = config["SessionToken"]?.ToString() ?? string.Empty;
             OpenedMemos = config["OpenedMemos"]?.ToObject<List<JObject>>() ?? OpenedMemos;
         }
         public static void Save()
         {
-            string path = GetDataPath("config.json");
+            string path = GetDataPath(ConfigFilename);
             if (!Directory.Exists(path)) Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
 
-            File.WriteAllTextAsync(GetDataPath("config.json"), JsonConvert.SerializeObject(new JObject
+            File.WriteAllTextAsync(GetDataPath(ConfigFilename), JsonConvert.SerializeObject(new JObject
             {
-                { SessionTokenName, SessionTokenValue },
+                { "SessionToken", SessionTokenValue },
                 { "OpenedMemos", new JArray(App.MemoWins.Values.Select(memoWin => JObject.FromObject(new {
                     id = memoWin.Memo.Id,
                     x = memoWin.window.Left,
@@ -54,7 +56,7 @@ namespace WomoMemo.Models
                     w = memoWin.window.Width,
                     h = memoWin.window.Height
                 }))) }
-            })); ;
+            }));
         }
     }
 }
