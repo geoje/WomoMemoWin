@@ -157,6 +157,7 @@ namespace WomoMemo
                         FileName = setupFilename,
                         UseShellExecute = true
                     });
+                    Application.Current.Shutdown();
                 }
                 catch
                 {
