@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
@@ -14,16 +15,21 @@ namespace WomoMemo.Views
 {
     public partial class MemoWindow : Window
     {
-        public Timer? PutMemoTimer;
+        bool _loaded = false;
 
         public Memo Memo;
+        public Timer? ResizeTimer, PutMemoTimer;
 
         public MemoWindow(Memo memo)
         {
             InitializeComponent();
+            App.MemoWins.Add(memo.Id, this);
             Memo = memo;
+
+            // Update title, content, bgcolor, ...
             UpdateMemo(memo);
 
+            // Add color changer panel
             int i = 0;
             var colorKeyList = Memo.COLORS.Keys.ToArray();
             foreach (Button btnCol in pnlColor.Children)
@@ -36,17 +42,34 @@ namespace WomoMemo.Views
                 btnCol.Click += memoChanged;
             }
         }
-        private void Window_Activated(object sender, EventArgs e)
+        private void window_Loaded(object sender, RoutedEventArgs e)
         {
-            foreach(Control control in grdHeader.Children)
-                control.Visibility = Visibility.Visible;
+            _loaded = true;
         }
-        private void Window_Deactivated(object sender, EventArgs e)
+        private void window_Activated(object sender, EventArgs e)
+        {
+            foreach (Control control in grdHeader.Children)
+                control.Visibility = Visibility.Visible;
+            txtContent.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+        }
+        private void window_Deactivated(object sender, EventArgs e)
         {
             foreach (Control control in grdHeader.Children)
                 control.Visibility = Visibility.Collapsed;
+            txtContent.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
         }
-        private void window_Closed(object sender, EventArgs e)
+        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (!_loaded) return;
+
+            // Save config
+            if (ResizeTimer == null)
+                ResizeTimer = new Timer(_ => Dispatcher.Invoke(() => Config.Save()), null, 400, Timeout.Infinite);
+            // Throttle
+            else
+                ResizeTimer.Change(400, Timeout.Infinite);
+        }
+        private void window_Closing(object sender, CancelEventArgs e)
         {
             App.MemoWins.Remove(Memo.Id);
         }
@@ -60,9 +83,13 @@ namespace WomoMemo.Views
         }
 
         // Header
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        private void grdHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left) DragMove();
+        }
+        private void grdHeader_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            Config.Save();
         }
         private void btnList_Click(object sender, RoutedEventArgs e)
         {
@@ -88,6 +115,7 @@ namespace WomoMemo.Views
 
                 await App.Client.DeleteAsync("/api/memos/" + Memo.Id);
 
+                Config.Save();
                 Close();
             }
             catch (Exception ex)
@@ -98,6 +126,8 @@ namespace WomoMemo.Views
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
+            App.MemoWins.Remove(Memo.Id);
+            Config.Save();
             Close();
         }
 

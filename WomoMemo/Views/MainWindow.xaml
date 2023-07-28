@@ -7,24 +7,6 @@
         mc:Ignorable="d" WindowStyle="None" WindowStartupLocation="CenterScreen"
         Title="WomoMemo" Width="300" Height="500" MinWidth="300" MinHeight="500"
         FontFamily="{DynamicResource MaterialDesignFont}" Closed="Window_Closed">
-    <Window.Resources>
-        <Style TargetType="{x:Type ScrollBar}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ScrollBar}">
-                        <Grid Background="{TemplateBinding Background}">
-                            <Track x:Name="PART_Track" IsDirectionReversed="true">
-                                <Track.Thumb>
-                                    <Thumb x:Name="Thumb" Background="#CCC" Width="8"/>
-                                </Track.Thumb>
-                            </Track>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </Window.Resources>
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" />
     </WindowChrome.WindowChrome>
@@ -133,8 +115,8 @@
                                 <Border BorderBrush="{Binding BorderColor}" Tag="{Binding Id}" BorderThickness="1" CornerRadius="4"  Width="262"
                                     Background="{Binding BgColor}" Padding="16" Margin="4,0,4,8" Cursor="Hand" MouseUp="Border_MouseUp">
                                     <StackPanel>
-                                        <TextBlock Foreground="#1A202C" Text="{Binding Title}" FontWeight="Bold" />
-                                        <TextBlock Foreground="#1A202C" Text="{Binding Content}" Margin="0,8,0,0" />
+                                        <TextBlock Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Title}" FontWeight="Bold" />
+                                        <TextBlock Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Content}" Margin="0,8,0,0" />
                                     </StackPanel>
                                 </Border>
                             </DataTemplate>

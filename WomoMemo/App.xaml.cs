@@ -7,13 +7,11 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WomoMemo.Models;
@@ -21,9 +19,6 @@ using WomoMemo.Views;
 
 namespace WomoMemo
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
         public static MainWindow? MainWin;
@@ -68,6 +63,25 @@ namespace WomoMemo
 
             // Start to sync data
             MemoTask = Task.Run(UpdateDataFromServer);
+
+            // Open all memo windows
+            Config.OpenedMemos.ForEach(jObj => {
+                int memoId = jObj["id"]?.ToObject<int>() ?? -1;
+                if (memoId == -1) return;
+
+                Memo memo = Memo.Empty;
+                memo.Id = memoId;
+                MemoWindow memoWin = new MemoWindow(memo);
+                memoWin.WindowStartupLocation = WindowStartupLocation.Manual;
+                memoWin.window.Left = jObj["x"]?.ToObject<double>() ?? memoWin.window.Left;
+                memoWin.window.Top = jObj["y"]?.ToObject<double>() ?? memoWin.window.Top;
+                memoWin.window.Width = jObj["w"]?.ToObject<double>() ?? memoWin.window.Width;
+                memoWin.window.Height = jObj["h"]?.ToObject<double>() ?? memoWin.window.Height;
+                memoWin.Show();
+            });
+
+            // If there is no opened memo, Open main window
+            if (Config.OpenedMemos.Count == 0) new MainWindow().Show();
         }
         protected override void OnExit(ExitEventArgs e)
         {
@@ -248,6 +262,9 @@ namespace WomoMemo
                         // Close and delete memo
                         foreach (int key in MemoWins.Keys.Where(key => !ExistsMemos.Contains(key)))
                         {
+                            // Open Main window if there is no window for keeping process running
+                            if (MainWin == null && MemoWins.Count == 1) new MainWindow().Show();
+
                             MemoWins[key].Close();
                             MemoWins.Remove(key);
                         }
