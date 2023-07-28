@@ -28,8 +28,4 @@
     <Resource Include="Resources\naver.png" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Publish\" />
-  </ItemGroup>
-
 </Project>
