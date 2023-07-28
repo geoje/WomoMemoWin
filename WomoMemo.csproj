@@ -5,11 +5,16 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>WomoMemo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\google.png" />
     <None Remove="Resources\naver.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="WomoMemo.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,6 +26,10 @@
   <ItemGroup>
     <Resource Include="Resources\google.png" />
     <Resource Include="Resources\naver.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Publish\" />
   </ItemGroup>
 
 </Project>
