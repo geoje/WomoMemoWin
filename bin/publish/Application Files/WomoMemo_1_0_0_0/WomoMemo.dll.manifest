@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <asmv1:assemblyIdentity name="WomoMemo.exe" version="1.0.0.0" publicKeyToken="7b86d14f41d1a619" language="neutral" processorArchitecture="msil" type="win32" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="Launcher" version="8.0.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="Launcher.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!--
+          UAC Manifest Options
+          If you want to change the Windows User Account Control level replace the
+          requestedExecutionLevel node with one of the following.
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+         If you want to utilize File and Registry Virtualization for backward
+         compatibility then delete the requestedExecutionLevel node.
+    -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="4.0.30319.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Launcher.exe" size="17336">
+      <assemblyIdentity name="Launcher" version="8.0.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>dlzg4YAuAMChlfyDxtOXD07JH3NoZhf/2l1qtZVElzg=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="MaterialDesignColors.dll" size="303104">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>xURa0KaH+mG9oCzUW6rBz7utMba1ZSnrnPR1ELroRiU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="MaterialDesignThemes.Wpf.dll" size="9591296">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>JhGcEu9rUK1TT66nZBGvTuybx37P0rseF8N0tg5viFY=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Microsoft.Web.WebView2.Core.dll" size="500696">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>bnuIabU4QXzDYcl6N/fO7JLdyK2E4Fhbz3Ah2rv2+YU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Microsoft.Web.WebView2.WinForms.dll" size="38360">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>718P/6iv6e9OOV6JzOvPYYYf4Van6dttLFmjREaPP2M=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Microsoft.Web.WebView2.Wpf.dll" size="45032">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>vR3Lip5zuQeFgaDqfFeQ9mrca5LaZPksc2rEfU3y2d0=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Microsoft.Xaml.Behaviors.dll" size="145272">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>j3gq16397qqTMYMGWqegvpOHq85gOOkSRV54UnsErco=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="Newtonsoft.Json.dll" size="712464">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>IsZJ91/OW+fHzNqIgEc7Y072ns8z9dGritiSyvR9Wgc=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="runtimes\win-arm64\native\WebView2Loader.dll" size="135600">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>WsasjCEc49Mvk0CDhTN61a4hkJFYDDvaXlDKB8X5Q38=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="runtimes\win-x64\native\WebView2Loader.dll" size="160216">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>3PPE9gJDE+6293XtNDJl1zvhzh1d3i+SGV28MjEMf8k=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="runtimes\win-x86\native\WebView2Loader.dll" size="115632">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>1vcMc0sJkX4e+avFSg7chK/qP3hOMcjsdftSWygh7uU=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="WomoMemo.deps.json" size="4513">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>IxJ2gX9+NIdRaZgOOKW+IxyPeykAmFwIq5+JYeCtq0Q=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="WomoMemo.dll" size="58808">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>gjziwOSVVW+YchYtBFHrgev+DIYI2lf39LggZDw7xBs=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="WomoMemo.exe" size="148920">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>VCIZcyg/+e4YP7DQ4o2QYkiP84u9fBrdKzo812ZEf/A=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="WomoMemo.runtimeconfig.json" size="372">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>HsoPDHAHCqg7tgnkt0mybctECXhDJgMnJjlHIiJKCYo=</dsig:DigestValue>
+    </hash>
+  </file>
+<publisherIdentity name="CN=JK-LAPTOP\Jake" issuerKeyHash="7b376200ea5128bd7567c4a30635565b2c5b02f6" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>INTolHS6cc0f5RQgzjqOpDAJWP5SdJKWhDw1GtaCAJY=</DigestValue></Reference></SignedInfo><SignatureValue>mp79+eMo1xHSgP/utVBwK1LcQw0ZyE1jnOGFcnl5Y5vzmawalm0p991xuCYl0CfR0uoGVq09uZSeFRZhvUkjIAskJ31GwtkO0s4WEFvEbgt0Y0jdAs3ZBK9me+wSY1smaaJIqhqflKaV41CLqnPhn+dX+ArZ+8j36cCE/+7Tm4s=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>pnrDnCgR9ZHvQttd/78hBZjsgCFXBBbRBn1LXE4BUaM709A5Olc4wjmowt2NNNRoiRz21uzVLhmDmeyAuWuCrbsI/7bEG5ZGZ+QA/qEReKpTm3ewi4U7bEy6kiDeNXBRrzsMx+5PInsZ6tcwpDviceDWsAEeQ+Oaz4E6KhpZjJk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="960082d61a353c8496927452fe580930a48e3ace2014e51fcd71ba7494e8d420" Description="" Url=""><as:assemblyIdentity name="WomoMemo.exe" version="1.0.0.0" publicKeyToken="7b86d14f41d1a619" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=JK-LAPTOP\Jake</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>Vs6cCqz1GMAF39/ekDGmfm+HJO1sZJ+9DDHJzFAuvdo=</DigestValue></Reference></SignedInfo><SignatureValue>VbJSZe/QOI/VLl9YBxcdOcIENAYVd0TQ3kEYaNZff/UEASe+47m5utP4eqDnW5xK584QV9wDpRkH9HuWa7nR7ghl8+umf6AeEYg3yL5GYnkNYg1FqPecOtQG7f2Iwtg7UfQJ1BSF6jJClvXKIMi87P/gOSItV6Ps/H2qFq9QaCg=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>pnrDnCgR9ZHvQttd/78hBZjsgCFXBBbRBn1LXE4BUaM709A5Olc4wjmowt2NNNRoiRz21uzVLhmDmeyAuWuCrbsI/7bEG5ZGZ+QA/qEReKpTm3ewi4U7bEy6kiDeNXBRrzsMx+5PInsZ6tcwpDviceDWsAEeQ+Oaz4E6KhpZjJk=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB0TCCATqgAwIBAgIQI7c2kK3bAZhAab7d4gLYeDANBgkqhkiG9w0BAQsFADAnMSUwIwYDVQQDHhwASgBLAC0ATABBAFAAVABPAFAAXABKAGEAawBlMB4XDTIzMDcyODA0MDIwNloXDTI0MDcyNzEwMDIwNlowJzElMCMGA1UEAx4cAEoASwAtAEwAQQBQAFQATwBQAFwASgBhAGsAZTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEApnrDnCgR9ZHvQttd/78hBZjsgCFXBBbRBn1LXE4BUaM709A5Olc4wjmowt2NNNRoiRz21uzVLhmDmeyAuWuCrbsI/7bEG5ZGZ+QA/qEReKpTm3ewi4U7bEy6kiDeNXBRrzsMx+5PInsZ6tcwpDviceDWsAEeQ+Oaz4E6KhpZjJkCAwEAATANBgkqhkiG9w0BAQsFAAOBgQAiadNqYAUAPgqY7gqFlRiQlByhVCzckrzB4I4FWZrgFM1LJwJJV26hCAlPrzqt5yZBG3/tT0Wz3PgwEatTfsQJXGLX9XBCbZTSCgHpDNJmSx3Hye3n1pLWoWLbKKIh5yy0ARvsol4i09uR5IpruijKZMU5bKExZbIOfcFAKEgR1w==</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>
