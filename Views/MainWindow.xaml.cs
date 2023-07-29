@@ -23,8 +23,6 @@ namespace WomoMemo
             InitializeComponent();
             lstMemo.ItemsSource = App.Memos;
             UpdateControls();
-
-            Task.Run(CheckUpdateAndDownload);
         }
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -39,10 +37,6 @@ namespace WomoMemo
         private async void btnNew_Click(object sender, RoutedEventArgs e)
         {
             await App.CreateNewMemo();
-        }
-        private async void btnUpdate_Click(object sender, RoutedEventArgs e)
-        {
-            await CheckUpdateAndDownload();
         }
         private async void btnUser_Click(object sender, RoutedEventArgs e)
         {
@@ -92,31 +86,6 @@ namespace WomoMemo
                 }
         }
 
-        // Private
-        private async Task CheckUpdateAndDownload()
-        {
-            int[] currentVer = App.GetCurrentVersion();
-            latestVer = await App.GetLatestVersion();
-            for (int i = 0; i < 3; i++)
-                if (latestVer[i] > currentVer[i])
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        btnUpdate.Visibility = Visibility.Visible;
-                        txtUpdate.Text = "There is a new version is available.\nDo you want to update to the latest version?\n\n" +
-                        $"Latest version: {string.Join(".", latestVer)}\nCurrent version: {string.Join('.', currentVer)}";
-                        btnUpdateTrue.Content = "Yes";
-                        btnUpdateTrue.Visibility = Visibility.Visible;
-                        btnUpdateFalse.Content = "No";
-                        btnUpdateFalse.Visibility = Visibility.Visible;
-                        dlgUpdate.IsOpen = true;
-                    });
-
-                    break;
-                }
-        }
-
-        // Public
         public void UpdateControls()
         {
             Dispatcher.Invoke(() =>
@@ -137,45 +106,6 @@ namespace WomoMemo
                 if (snkAlert.MessageQueue is { } messageQueue)
                     Task.Factory.StartNew(() => messageQueue.Enqueue(message));
             });
-        }
-
-        private async void dlgUpdate_DialogClosed(object sender, DialogClosedEventArgs eventArgs)
-        {
-            if (((string)(eventArgs.Parameter ?? string.Empty)) != "True") return;
-
-            if (txtUpdate.Text.StartsWith("There is a new version is available"))
-            {
-                try
-                {
-                    string setupFilename = Path.Combine(Path.GetTempPath(), "Setup.msi");
-                    using (var client = new HttpClient())
-                    using (var webFileStream = await client.GetStreamAsync(Config.GITHUB_URL + $"/releases/download/{string.Join(".", latestVer)}/Setup.msi"))
-                    using (var localFileStream = new FileStream(setupFilename, FileMode.Create))
-                        await webFileStream.CopyToAsync(localFileStream);
-                    Process.Start(new ProcessStartInfo
-                    {
-                        FileName = setupFilename,
-                        UseShellExecute = true
-                    });
-                    Application.Current.Shutdown();
-                }
-                catch
-                {
-                    txtUpdate.Text = $"Download failed.\n\nPlease enter the below URL on your browser or click OK button to open the URL and download the program directly.\nYou can download and install the Setup.msi file inside the Assets.\n\n{Config.GITHUB_URL}/releases/latest";
-                    btnUpdateTrue.Content = "OK";
-                    btnUpdateTrue.Visibility = Visibility.Visible;
-                    btnUpdateFalse.Visibility = Visibility.Collapsed;
-                    dlgUpdate.IsOpen = true;
-                }
-            }
-            else if (txtUpdate.Text.StartsWith("Download failed"))
-            {
-                Process.Start(new ProcessStartInfo
-                {
-                    FileName = Config.GITHUB_URL + "/releases/latest",
-                    UseShellExecute = true
-                });
-            }
         }
     }
 }

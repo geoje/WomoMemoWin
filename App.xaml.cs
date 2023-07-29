@@ -86,34 +86,6 @@ namespace WomoMemo
             base.OnExit(e);
         }
 
-        public static int[] GetCurrentVersion()
-        {
-            Version currentVerObj = typeof(MainWindow).Assembly.GetName().Version ?? Version.Parse("1.0.0");
-            return new int[3] { currentVerObj.Major, currentVerObj.Minor, currentVerObj.Build };
-        }
-        public static async Task<int[]> GetLatestVersion()
-        {
-            try
-            {
-                using (var client = new HttpClient() { BaseAddress = new Uri(Config.GITHUB_URL + "/releases/latest") })
-                {
-                    var response = await client.GetAsync(User.ImageUrl);
-                    response.EnsureSuccessStatusCode();
-
-                    string latestVerStr = Regex.Match(await response.Content.ReadAsStringAsync(), @"(?<=Release )(\d|\.)+").Value;
-                    if (string.IsNullOrEmpty(latestVerStr)) latestVerStr = "1.0.0";
-                    int[] latestVer = latestVerStr.Split('.').Select(s => int.Parse(s)).ToArray();
-                    return latestVer;
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError(ex.ToString());
-                MainWin?.ShowAlert("Error on getting latest version");
-            }
-            return new int[] { 1, 0, 0 };
-        }
-        
         public static async Task GetUserProfile()
         {
             // Get user profile
