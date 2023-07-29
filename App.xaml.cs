@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -41,10 +40,13 @@ namespace WomoMemo
             // Run parent's code
             base.OnStartup(e);
 
+#if DEBUG
+#else
             // Init registry
             string appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemoWin";
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
             key?.SetValue(appName, Process.GetCurrentProcess().MainModule?.FileName ?? "");
+#endif
 
             // Get profile if token available
             Config.Load();

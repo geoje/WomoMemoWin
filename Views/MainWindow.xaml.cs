@@ -5,17 +5,12 @@ using WomoMemo.Views;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using System.IO;
-using System.Net.Http;
-using MaterialDesignThemes.Wpf;
 
 namespace WomoMemo
 {
     public partial class MainWindow : Window
     {
-        int[] latestVer = { 1, 0, 0 };
         // Window
         public MainWindow()
         {
@@ -38,10 +33,13 @@ namespace WomoMemo
         {
             await App.CreateNewMemo();
         }
-        private async void btnUser_Click(object sender, RoutedEventArgs e)
+        private void btnUser_Click(object sender, RoutedEventArgs e)
         {
-            if (User.Id == "") await App.GetUserProfile();
-            if (User.Image == null) await App.DownloadUserProfileImage();
+            if (User.Id == "") Task.Run(async () =>
+            {
+                await App.GetUserProfile();
+                if (User.Image == null) await App.DownloadUserProfileImage();
+            });
             btnUser.ContextMenu.PlacementTarget = btnUser;
             btnUser.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
             btnUser.ContextMenu.IsOpen = true;
