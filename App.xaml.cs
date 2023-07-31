@@ -4,13 +4,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using WomoMemo.Models;
@@ -18,7 +19,7 @@ using WomoMemo.Views;
 
 namespace WomoMemo
 {
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
         public static MainWindow? MainWin;
         public static Dictionary<int, MemoWindow> MemoWins = new Dictionary<int, MemoWindow>();
@@ -43,7 +44,7 @@ namespace WomoMemo
 #if DEBUG
 #else
             // Init registry
-            string appName = Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemoWin";
+            string appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemoWin";
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
             key?.SetValue(appName, Process.GetCurrentProcess().MainModule?.FileName ?? "");
 #endif
@@ -73,10 +74,28 @@ namespace WomoMemo
                 memo.Id = memoId;
                 MemoWindow memoWin = new MemoWindow(memo);
                 memoWin.WindowStartupLocation = WindowStartupLocation.Manual;
-                memoWin.window.Left = jObj["x"]?.ToObject<double>() ?? memoWin.window.Left;
-                memoWin.window.Top = jObj["y"]?.ToObject<double>() ?? memoWin.window.Top;
-                memoWin.window.Width = jObj["w"]?.ToObject<double>() ?? memoWin.window.Width;
-                memoWin.window.Height = jObj["h"]?.ToObject<double>() ?? memoWin.window.Height;
+
+                // Intersect window with screen
+                Rectangle windowBounds = new Rectangle(
+                    (int)(jObj["x"]?.ToObject<double>() ?? memoWin.window.Left),
+                    (int)(jObj["y"]?.ToObject<double>() ?? memoWin.window.Top),
+                    (int)(jObj["w"]?.ToObject<double>() ?? memoWin.window.Width),
+                    (int)(jObj["h"]?.ToObject<double>() ?? memoWin.window.Height));
+                bool intersect = false;
+                foreach (Screen screen in Screen.AllScreens)
+                    if (screen.Bounds.IntersectsWith(windowBounds))
+                    {
+                        intersect = true;
+                        break;
+                    }
+                if (intersect)
+                {
+                    memoWin.window.Left = windowBounds.Left;
+                    memoWin.window.Top = windowBounds.Top;
+                    memoWin.window.Width = windowBounds.Width;
+                    memoWin.window.Height = windowBounds.Height;
+                }
+                
                 memoWin.Show();
             });
 

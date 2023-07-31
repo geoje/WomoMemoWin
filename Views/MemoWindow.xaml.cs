@@ -85,11 +85,11 @@ namespace WomoMemo.Views
         // Header
         private void grdHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left) DragMove();
-        }
-        private void grdHeader_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            Config.Save();
+            if (e.ChangedButton == MouseButton.Left)
+            {
+                DragMove();
+                Config.Save();
+            }
         }
         private void btnList_Click(object sender, RoutedEventArgs e)
         {
