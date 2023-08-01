@@ -23,11 +23,14 @@ namespace WomoMemo.Views
         public MemoWindow(Memo memo)
         {
             InitializeComponent();
-            App.MemoWins.Add(memo.Id, this);
             Memo = memo;
 
             // Update title, content, bgcolor, ...
-            UpdateMemo(memo);
+            if (memo.Id != -1)
+            {
+                App.MemoWins.Add(memo.Id, this);
+                UpdateMemo(memo);
+            }
 
             // Add color changer panel
             int i = 0;
@@ -134,6 +137,9 @@ namespace WomoMemo.Views
         // Body
         private void memoChanged(object sender, EventArgs e)
         {
+            if (!_loaded) return;
+            Trace.WriteLine(Memo.Id);
+
             // Update my memo instance
             Control sndCon = (Control)sender;
             if (sndCon.Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
@@ -157,6 +163,8 @@ namespace WomoMemo.Views
             if (PutMemoTimer == null)
                 PutMemoTimer = new Timer(async _ =>
                 {
+                    if (!App.Memos.Any(memo => memo.Id == Memo.Id)) return;
+
                     try
                     {
                         JObject jObj = new JObject
