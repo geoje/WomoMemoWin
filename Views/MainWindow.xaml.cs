@@ -31,7 +31,7 @@ namespace WomoMemo
         }
         private async void btnNew_Click(object sender, RoutedEventArgs e)
         {
-            //await App.CreateNewMemo();
+            await App.CreateNewMemo();
         }
         private void btnUser_Click(object sender, RoutedEventArgs e)
         {

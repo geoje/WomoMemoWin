@@ -14,9 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FirebaseAuthentication.net" Version="4.1.0" />
+    <PackageReference Include="FirebaseAuthentication.WPF" Version="4.1.0" />
+    <PackageReference Include="FirebaseDatabase.net" Version="4.2.0" />
     <PackageReference Include="MaterialDesignThemes" Version="4.9.0" />
-    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1901.177" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>
