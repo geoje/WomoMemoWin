@@ -31,19 +31,19 @@ namespace WomoMemo
         }
         private async void btnNew_Click(object sender, RoutedEventArgs e)
         {
-            await App.CreateNewMemo();
+            //await App.CreateNewMemo();
         }
         private void btnUser_Click(object sender, RoutedEventArgs e)
         {
-            if (User.Id == "") Task.Run(async () =>
-            {
-                await App.GetUserProfile();
-                if (User.Image == null) await App.DownloadUserProfileImage();
-            });
-            btnUser.ContextMenu.PlacementTarget = btnUser;
-            btnUser.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-            btnUser.ContextMenu.IsOpen = true;
-            e.Handled = true;
+            //if (User.Id == "") Task.Run(async () =>
+            //{
+            //    await App.GetUserProfile();
+            //    if (User.Image == null) await App.DownloadUserProfileImage();
+            //});
+            //btnUser.ContextMenu.PlacementTarget = btnUser;
+            //btnUser.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            //btnUser.ContextMenu.IsOpen = true;
+            //e.Handled = true;
         }
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
@@ -70,32 +70,32 @@ namespace WomoMemo
         // Body
         private void Border_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            int id = (int)((Border)sender).Tag;
-            for (int i = 0; i < App.Memos.Count; i++)
-                if (App.Memos[i].Id == id)
-                {
-                    if (App.MemoWins.ContainsKey(id)) App.MemoWins[id].Show();
-                    else
-                    {
-                        new MemoWindow(App.Memos[i]).Show();
-                        Config.Save();
-                    }
-                    App.MemoWins[id].Focus();
-                }
+            //int id = (int)((Border)sender).Tag;
+            //for (int i = 0; i < App.Memos.Count; i++)
+            //    if (App.Memos[i].Id == id)
+            //    {
+            //        if (App.MemoWins.ContainsKey(id)) App.MemoWins[id].Show();
+            //        else
+            //        {
+            //            new MemoWindow(App.Memos[i]).Show();
+            //            Config.Save();
+            //        }
+            //        App.MemoWins[id].Focus();
+            //    }
         }
 
         public void UpdateControls()
         {
-            Dispatcher.Invoke(() =>
-            {
-                btnUser.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Collapsed : Visibility.Visible;
-                btnLogin.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Visible : Visibility.Collapsed;
-                imgUser.ImageSource = User.Image;
+            //Dispatcher.Invoke(() =>
+            //{
+            //    btnUser.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Collapsed : Visibility.Visible;
+            //    btnLogin.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Visible : Visibility.Collapsed;
+            //    imgUser.ImageSource = User.Image;
 
-                imgProvider.Source = new BitmapImage(new Uri($"/Resources/{User.Provider}.png", UriKind.RelativeOrAbsolute));
-                txtName.Text = User.Name;
-                txtEmail.Text = User.Email;
-            });
+            //    imgProvider.Source = new BitmapImage(new Uri($"/Resources/{User.Provider}.png", UriKind.RelativeOrAbsolute));
+            //    txtName.Text = User.Name;
+            //    txtEmail.Text = User.Email;
+            //});
         }
         public void ShowAlert(string message)
         {

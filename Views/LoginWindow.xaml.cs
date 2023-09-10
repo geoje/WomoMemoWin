@@ -20,34 +20,34 @@ namespace WomoMemo.Views
         }
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            await webMain.EnsureCoreWebView2Async();
-            webMain.CoreWebView2.CookieManager.DeleteAllCookies();
-            webMain.Source = new Uri(Config.AuthUrl + "/login?callbackUrl=" + HttpUtility.UrlEncode(Config.MemoUrl));
+            //await webMain.EnsureCoreWebView2Async();
+            //webMain.CoreWebView2.CookieManager.DeleteAllCookies();
+            //webMain.Source = new Uri(Config.AuthUrl + "/login?callbackUrl=" + HttpUtility.UrlEncode(Config.MemoUrl));
         }
 
         private async void webMain_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
         {
-            List<CoreWebView2Cookie> cookieList = await webMain.CoreWebView2.CookieManager.GetCookiesAsync(Config.MemoUrl);
-            var sessinoTokenCookie = cookieList.Find(cookie => cookie.Name.Equals(Config.SessionTokenName));
-            if (sessinoTokenCookie == null) return;
+            //List<CoreWebView2Cookie> cookieList = await webMain.CoreWebView2.CookieManager.GetCookiesAsync(Config.MemoUrl);
+            //var sessinoTokenCookie = cookieList.Find(cookie => cookie.Name.Equals(Config.SessionTokenName));
+            //if (sessinoTokenCookie == null) return;
 
-            // Save sessionToken to file
-            Config.SessionTokenValue = sessinoTokenCookie.Value;
-            Config.Save();
+            //// Save sessionToken to file
+            //Config.SessionTokenValue = sessinoTokenCookie.Value;
+            //Config.Save();
 
-            // Save cookie to App
-            App.Handler = new HttpClientHandler();
-            App.Handler.CookieContainer = new CookieContainer();
-            App.Handler.CookieContainer.Add(new Uri(Config.MemoUrl), new Cookie(Config.SessionTokenName, Config.SessionTokenValue));
-            App.Client = new HttpClient(App.Handler) { BaseAddress = new Uri(Config.MemoUrl) };
+            //// Save cookie to App
+            //App.Handler = new HttpClientHandler();
+            //App.Handler.CookieContainer = new CookieContainer();
+            //App.Handler.CookieContainer.Add(new Uri(Config.MemoUrl), new Cookie(Config.SessionTokenName, Config.SessionTokenValue));
+            //App.Client = new HttpClient(App.Handler) { BaseAddress = new Uri(Config.MemoUrl) };
 
-            // Get and Download user profile
-            await App.GetUserProfile();
-            await App.DownloadUserProfileImage();
+            //// Get and Download user profile
+            //await App.GetUserProfile();
+            //await App.DownloadUserProfileImage();
 
-            // Update controls and close window
-            App.MainWin?.UpdateControls();
-            Close();
+            //// Update controls and close window
+            //App.MainWin?.UpdateControls();
+            //Close();
         }
     }
 }

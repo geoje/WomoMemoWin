@@ -10,20 +10,10 @@ namespace WomoMemo.Models
     public class Config
     {
         public readonly static string GITHUB_URL = "https://github.com/geoje/WomoMemoWin";
-#if DEBUG
-        readonly static string ConfigFilename = "config.dev.json";
-        public readonly static string MemoUrl = "http://localhost:3000";
-        public readonly static string AuthUrl = "http://localhost:3001";
-        public readonly static string SessionTokenName = "next-auth.session-token";
-#else
         readonly static string ConfigFilename = "config.json";
-        public readonly static string MemoUrl = "https://memo.womosoft.com";
-        public readonly static string AuthUrl = "https://www.womosoft.com";
-        public readonly static string SessionTokenName = "__Secure-next-auth.session-token";
-#endif
 
-        public static string SessionTokenValue = string.Empty;
         public static List<JObject> OpenedMemos = new List<JObject>();
+        public static string SessionTokenValue = "";
 
         public static string GetDataPath(params string[] relativePaths)
         {
@@ -50,7 +40,7 @@ namespace WomoMemo.Models
             {
                 { "SessionToken", SessionTokenValue },
                 { "OpenedMemos", new JArray(App.MemoWins.Values.Select(memoWin => JObject.FromObject(new {
-                    id = memoWin.Memo.Id,
+                    key = memoWin.Memo.Key,
                     x = memoWin.window.Left,
                     y = memoWin.window.Top,
                     w = memoWin.window.Width,

@@ -9,7 +9,6 @@ namespace WomoMemo.Models
         public static string ImageUrl = "";
         public static BitmapImage? Image;
         public static string Id = "";
-        public static string Provider = "";
 
         public static void Clear()
         {
@@ -18,7 +17,6 @@ namespace WomoMemo.Models
             ImageUrl = "";
             Image = null;
             Id = "";
-            Provider = "";
         }
     }
 }
