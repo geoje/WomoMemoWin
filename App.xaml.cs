@@ -1,34 +1,26 @@
 ﻿using Firebase.Auth.Providers;
 using Firebase.Auth.Repository;
 using Firebase.Auth.UI;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using WomoMemo.Models;
 using WomoMemo.Views;
 
 namespace WomoMemo
 {
-    public partial class App : System.Windows.Application
+    public partial class App : Application
     {
+        readonly static string FIREBASE_API_KEY = "AIzaSyBegDS_abY3Jl9FsldvKR2sP_YpSkzobjc";
+        readonly static string FIREBASE_AUTH_DOMAIN = "womoso.firebaseapp.com";
+        readonly static string FIREBASE_PRIVACY_POLICY_URL = "";
+        readonly static string FIREBASE_TERMS_IF_SERVICE_URL = "";
+
         public static MainWindow? MainWin;
         public static Dictionary<string, MemoWindow> MemoWins = new Dictionary<string, MemoWindow>();
-
-        public static HttpClientHandler Handler = new HttpClientHandler();
-        //public static HttpClient Client = new HttpClient(Handler) { BaseAddress = new Uri(Config.MemoUrl) };
         public static ObservableCollection<Memo> Memos = new ObservableCollection<Memo>();
 
         protected override void OnStartup(StartupEventArgs e)
@@ -44,38 +36,16 @@ namespace WomoMemo
             // Run parent's code
             base.OnStartup(e);
 
-#if DEBUG
-#else
-            // Init registry
-            string appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemoWin";
-            var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            key?.SetValue(appName, Process.GetCurrentProcess().MainModule?.FileName ?? "");
-#endif
-
             // Init Firebase Authentication
             FirebaseUI.Initialize(new FirebaseUIConfig
             {
-                ApiKey = "AIzaSyBegDS_abY3Jl9FsldvKR2sP_YpSkzobjc",
-                AuthDomain = "www.womosoft.com",
+                ApiKey = FIREBASE_API_KEY,
+                AuthDomain = FIREBASE_AUTH_DOMAIN,
                 Providers = new FirebaseAuthProvider[] { new GoogleProvider() },
-                PrivacyPolicyUrl = "https://github.com/step-up-labs/firebase-authentication-dotnet",
-                TermsOfServiceUrl = "https://github.com/step-up-labs/firebase-database-dotnet"
+                PrivacyPolicyUrl = FIREBASE_PRIVACY_POLICY_URL,
+                TermsOfServiceUrl = FIREBASE_TERMS_IF_SERVICE_URL,
+                UserRepository = new FileUserRepository("WomoMemo")
             });
-
-            //// Get profile if token available
-            //Config.Load();
-            //if (!string.IsNullOrEmpty(Config.SessionTokenValue))
-            //{
-            //    Handler.CookieContainer = new CookieContainer();
-            //    Task.Run(async () =>
-            //    {
-            //        await GetUserProfile();
-            //        await DownloadUserProfileImage();
-            //    });
-            //}
-
-            //// Start to sync data
-            //Task.Run(UpdateDataFromServer);
 
             //// Open all memo windows
             //Config.OpenedMemos.ForEach(jObj => {
@@ -111,73 +81,22 @@ namespace WomoMemo
             //    memoWin.Show();
             //});
 
-            // If there is no opened memo, Open main window
-            if (Config.OpenedMemos.Count == 0) new MainWindow().Show();
+            // Open main window if there is no opened memo
+            if (Config.OpenedMemos.Count == 0) (MainWin = new MainWindow()).Show();
+
+            // Startup registry
+#if DEBUG
+#else
+            string appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemoWin";
+            var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            key?.SetValue(appName, Process.GetCurrentProcess().MainModule?.FileName ?? "");
+#endif
         }
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
         }
 
-        public static async Task GetUserProfile()
-        {
-            ////Get user profile
-            //try
-            //{
-            //    //Request
-            //   var response = await Client.GetAsync("/api/auth/session");
-            //    response.EnsureSuccessStatusCode();
-
-            //    //Parse json to User instance
-            //   JToken result = JObject.Parse(await response.Content.ReadAsStringAsync())["user"] ?? JObject.Parse("{}");
-            //    User.Id = result["id"]?.ToString() ?? "";
-
-            //    if (!string.IsNullOrEmpty(User.Id))
-            //    {
-            //        User.Name = result["name"]?.ToString() ?? "";
-            //        User.Email = result["email"]?.ToString() ?? "";
-            //        User.ImageUrl = result["image"]?.ToString() ?? "";
-            //        User.Provider = result["provider"]?.ToString() ?? "";
-            //        MainWin?.UpdateControls();
-            //    }
-            //    else
-            //        MainWin?.ShowAlert("Invalid token. Please login again");
-            //}
-            //catch (Exception ex)
-            //{
-            //    Trace.TraceError(ex.ToString());
-            //    MainWin?.ShowAlert("Error on getting profile");
-            //}
-        }
-        public static async Task DownloadUserProfileImage()
-        {
-            try
-            {
-                using (var client = new HttpClient() { BaseAddress = new Uri(User.ImageUrl) })
-                {
-                    var response = await client.GetAsync(User.ImageUrl);
-                    response.EnsureSuccessStatusCode();
-
-                    if (MainWin != null)
-                        MainWin.Dispatcher.Invoke(() =>
-                        {
-                            byte[] imageBytes = response.Content.ReadAsByteArrayAsync().Result;
-                            User.Image = new BitmapImage();
-                            User.Image.BeginInit();
-                            User.Image.StreamSource = new System.IO.MemoryStream(imageBytes);
-                            User.Image.CacheOption = BitmapCacheOption.OnLoad;
-                            User.Image.EndInit();
-                        });
-
-                    MainWin?.UpdateControls();
-                }
-            }
-            catch (Exception ex)
-            {
-                Trace.TraceError(ex.ToString());
-                MainWin?.ShowAlert("Error on downloading user profile");
-            }
-        }
         public static async Task CreateNewMemo()
         {
             //if (Memos.Count > 0 && Memos[0].Id == Memo.Empty.Id) return;
@@ -212,74 +131,6 @@ namespace WomoMemo
             //    memoWindow.Close();
             //    Trace.TraceError(ex.ToString());
             //    MainWin?.ShowAlert("Error on posting memo");
-            //}
-        }
-        async void UpdateDataFromServer()
-        {
-            //for (; ; Thread.Sleep(1000))
-            //{
-            //    // Validate token
-            //    if (string.IsNullOrEmpty(Config.SessionTokenValue)) continue;
-
-            //    // Get memos
-            //    try
-            //    {
-            //        // Request
-            //       var response = await Client.GetAsync("/api/memos");
-            //        response.EnsureSuccessStatusCode();
-
-            //        // Parse json to memo array
-            //       JArray result = JArray.Parse(await response.Content.ReadAsStringAsync());
-
-            //        // Update memos
-            //        Dispatcher.Invoke(() =>
-            //        {
-            //            ArrayList ExistsMemos = new ArrayList();
-
-            //            Memos.Clear();
-            //            foreach (var item in result.Children())
-            //            {
-            //                int memoId = item["id"]?.ToObject<int>() ?? Memo.Empty.Id;
-            //                if (memoId == Memo.Empty.Id) continue;
-            //                bool isMemoWinValid = MemoWins.ContainsKey(memoId) && MemoWins[memoId] != null;
-            //                bool isMemoWinUpdating = isMemoWinValid && MemoWins[memoId].PutMemoTimer != null;
-
-            //                // Add memo from server or local
-            //                var memo =
-            //                isMemoWinValid && isMemoWinUpdating ?
-            //                MemoWins[memoId].Memo :
-            //                new Memo(memoId,
-            //                item["userId"]?.ToString() ?? Memo.Empty.UserId,
-            //                item["title"]?.ToString() ?? Memo.Empty.Title,
-            //                item["content"]?.ToString() ?? Memo.Empty.Content,
-            //                item["color"]?.ToString() ?? Memo.Empty.Color,
-            //                item["checkbox"]?.ToObject<bool>() ?? Memo.Empty.Checkbox,
-            //                item["updatedAt"]?.ToString() ?? Memo.Empty.UpdatedAt);
-            //                Memos.Add(memo);
-            //                ExistsMemos.Add(memoId);
-            //                if (isMemoWinValid && !isMemoWinUpdating)
-            //                    MemoWins[memoId].UpdateMemo(memo);
-            //            }
-
-            //            // Close and delete memo
-            //            foreach (int key in MemoWins.Keys.Where(key => !ExistsMemos.Contains(key)))
-            //            {
-            //                // Open Main window if there is no window for keeping process running
-            //                if (MainWin == null && MemoWins.Count == 1) new MainWindow().Show();
-
-            //                MemoWins[key].Close();
-            //                MemoWins.Remove(key);
-            //            }
-            //        });
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Trace.TraceError(ex.ToString());
-            //        MainWin?.ShowAlert("Error on getting memos");
-            //    }
-
-            //    // Update Controls
-            //    MainWin?.UpdateControls();
             //}
         }
     }

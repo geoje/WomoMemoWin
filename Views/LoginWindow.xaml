@@ -3,10 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:wv2="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf"
-        mc:Ignorable="d"
-        Title="Login - Womosoft" Height="700" Width="700" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Loaded="Window_Loaded">
+        xmlns:firebase="clr-namespace:Firebase.Auth.UI;assembly=Firebase.Auth.UI.WPF"
+        mc:Ignorable="d" Height="480" Width="480"
+        Title="Login - Womosoft" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid>
-        <wv2:WebView2 Name="webMain" NavigationStarting="webMain_NavigationStarting"/>
+        <firebase:FirebaseUIControl>
+            <firebase:FirebaseUIControl.Header>
+                <Image Height="120" Source="/WomoMemo.ico" Margin="0,40,0,80" />
+            </firebase:FirebaseUIControl.Header>
+        </firebase:FirebaseUIControl>
     </Grid>
 </Window>

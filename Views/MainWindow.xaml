@@ -16,7 +16,7 @@
             <RowDefinition Height="48" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0" MouseDown="Grid_MouseDown" Background="White">
+        <Grid x:Name="GrdAppBar" Grid.Row="0" MouseDown="GridAppBar_MouseDown" Background="White">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="32"/>
                 <ColumnDefinition Width="*"/>
@@ -39,10 +39,7 @@
                         <MenuItem IsEnabled="False" Height="60" Opacity="1">
                             <MenuItem.Header>
                                 <StackPanel>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Image x:Name="imgProvider" Width="16" Margin="0,0,4,0" />
-                                        <TextBlock x:Name="txtName" Padding="4" FontWeight="Bold" Opacity="0.6" />
-                                    </StackPanel>
+                                    <TextBlock x:Name="txtName" Padding="4" FontWeight="Bold" Opacity="0.6" />
                                     <TextBlock x:Name="txtEmail" Padding="4" FontWeight="Bold" Opacity="0.6" />
                                 </StackPanel>
                             </MenuItem.Header>

@@ -1,11 +1,11 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using WomoMemo.Models;
 using WomoMemo.Views;
-using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using System;
 using System.Threading.Tasks;
+using Firebase.Auth;
+using Firebase.Auth.UI;
 
 namespace WomoMemo
 {
@@ -14,18 +14,41 @@ namespace WomoMemo
         // Window
         public MainWindow()
         {
-            App.MainWin = this;
             InitializeComponent();
+
+            FirebaseUI.Instance.Client.AuthStateChanged += AuthStateChanged;
             lstMemo.ItemsSource = App.Memos;
-            UpdateControls();
         }
         private void Window_Closed(object sender, EventArgs e)
         {
             App.MainWin = null;
         }
-        
+        private void AuthStateChanged(object? sender, UserEventArgs e)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                btnUser.Visibility = e.User == null ? Visibility.Collapsed : Visibility.Visible;
+                btnLogin.Visibility = e.User == null ? Visibility.Visible : Visibility.Collapsed;
+
+                txtName.Text = e.User == null ? "" : e.User.Info.DisplayName;
+                txtEmail.Text = e.User == null ? "" : e.User.Info.Email;
+
+                imgUser.ImageSource = e.User == null ? null :
+                string.IsNullOrWhiteSpace(e.User.Info.PhotoUrl) ? null :
+                new BitmapImage(new Uri(e.User.Info.PhotoUrl));
+            });
+        }
+        public void ShowAlert(string message)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (snkAlert.MessageQueue is { } messageQueue)
+                    Task.Factory.StartNew(() => messageQueue.Enqueue(message));
+            });
+        }
+
         // Header
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        private void GridAppBar_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left) DragMove();
         }
@@ -35,15 +58,10 @@ namespace WomoMemo
         }
         private void btnUser_Click(object sender, RoutedEventArgs e)
         {
-            //if (User.Id == "") Task.Run(async () =>
-            //{
-            //    await App.GetUserProfile();
-            //    if (User.Image == null) await App.DownloadUserProfileImage();
-            //});
-            //btnUser.ContextMenu.PlacementTarget = btnUser;
-            //btnUser.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
-            //btnUser.ContextMenu.IsOpen = true;
-            //e.Handled = true;
+            btnUser.ContextMenu.PlacementTarget = btnUser;
+            btnUser.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            btnUser.ContextMenu.IsOpen = true;
+            e.Handled = true;
         }
         private void btnLogin_Click(object sender, RoutedEventArgs e)
         {
@@ -51,16 +69,8 @@ namespace WomoMemo
         }
         private void mnuLogout_Click(object sender, RoutedEventArgs e)
         {
-            Config.SessionTokenValue = "";
-            Config.Save();
-            User.Clear();
             App.Memos.Clear();
-            imgProvider.Source = null;
-            imgUser.ImageSource = null;
-            txtName.Text = "";
-            txtEmail.Text = "";
-            btnUser.Visibility = Visibility.Collapsed;
-            btnLogin.Visibility = Visibility.Visible;
+            FirebaseUI.Instance.Client.SignOut();
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
@@ -82,28 +92,6 @@ namespace WomoMemo
             //        }
             //        App.MemoWins[id].Focus();
             //    }
-        }
-
-        public void UpdateControls()
-        {
-            //Dispatcher.Invoke(() =>
-            //{
-            //    btnUser.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Collapsed : Visibility.Visible;
-            //    btnLogin.Visibility = string.IsNullOrEmpty(Config.SessionTokenValue) ? Visibility.Visible : Visibility.Collapsed;
-            //    imgUser.ImageSource = User.Image;
-
-            //    imgProvider.Source = new BitmapImage(new Uri($"/Resources/{User.Provider}.png", UriKind.RelativeOrAbsolute));
-            //    txtName.Text = User.Name;
-            //    txtEmail.Text = User.Email;
-            //});
-        }
-        public void ShowAlert(string message)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                if (snkAlert.MessageQueue is { } messageQueue)
-                    Task.Factory.StartNew(() => messageQueue.Enqueue(message));
-            });
         }
     }
 }
