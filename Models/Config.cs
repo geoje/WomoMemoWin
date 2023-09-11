@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -13,28 +14,28 @@ namespace WomoMemo.Models
 
         public static List<JObject> OpenedMemos = new List<JObject>();
 
-        public static string GetDataPath(string folder)
+        public static string GetDataPath()
         {
             string folderPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            Directory.CreateDirectory(Path.Combine(folderPath, folder));
-            return Path.Combine(folderPath, folder, CONFIG_FILENAME);
+            Directory.CreateDirectory(Path.Combine(folderPath, App.APP_NAME));
+            return Path.Combine(folderPath, App.APP_NAME, CONFIG_FILENAME);
         }
         public static void Load()
         {
-            if (!File.Exists(GetDataPath(CONFIG_FILENAME))) return;
+            if (!File.Exists(GetDataPath())) return;
 
-            JObject config = JObject.Parse(File.ReadAllText(GetDataPath(CONFIG_FILENAME)));
+            JObject config = JObject.Parse(File.ReadAllText(GetDataPath()));
             OpenedMemos = config["OpenedMemos"]?.ToObject<List<JObject>>() ?? OpenedMemos;
         }
         public static void Save()
         {
-            string path = GetDataPath(CONFIG_FILENAME);
+            string path = GetDataPath();
             if (!Directory.Exists(path)) Directory.CreateDirectory(Path.GetDirectoryName(path) ?? "");
 
-            File.WriteAllTextAsync(GetDataPath(CONFIG_FILENAME), JsonConvert.SerializeObject(new JObject
+            File.WriteAllTextAsync(GetDataPath(), JsonConvert.SerializeObject(new JObject
             {
                 { "OpenedMemos", new JArray(App.MemoWins.Values.Select(memoWin => JObject.FromObject(new {
-                    key = memoWin.Memo.Key,
+                    key = memoWin.Key,
                     x = memoWin.window.Left,
                     y = memoWin.window.Top,
                     w = memoWin.window.Width,

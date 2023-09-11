@@ -6,6 +6,9 @@ using System;
 using System.Threading.Tasks;
 using Firebase.Auth;
 using Firebase.Auth.UI;
+using WomoMemo.Models;
+using System.Collections.Generic;
+using System.Windows.Controls;
 
 namespace WomoMemo
 {
@@ -16,27 +19,33 @@ namespace WomoMemo
         {
             InitializeComponent();
 
-            FirebaseUI.Instance.Client.AuthStateChanged += AuthStateChanged;
-            lstMemo.ItemsSource = App.Memos;
+            UpdateUser(FirebaseUI.Instance.Client.User);
+            lstMemo.ItemsSource = App.Memos.Values;
         }
         private void Window_Closed(object sender, EventArgs e)
         {
             App.MainWin = null;
         }
-        private void AuthStateChanged(object? sender, UserEventArgs e)
+
+        // Func
+        public void UpdateUser(User? user)
         {
             Dispatcher.Invoke(() =>
             {
-                btnUser.Visibility = e.User == null ? Visibility.Collapsed : Visibility.Visible;
-                btnLogin.Visibility = e.User == null ? Visibility.Visible : Visibility.Collapsed;
+                btnUser.Visibility = user == null ? Visibility.Collapsed : Visibility.Visible;
+                btnLogin.Visibility = user == null ? Visibility.Visible : Visibility.Collapsed;
 
-                txtName.Text = e.User == null ? "" : e.User.Info.DisplayName;
-                txtEmail.Text = e.User == null ? "" : e.User.Info.Email;
+                txtName.Text = user == null ? "" : user.Info.DisplayName;
+                txtEmail.Text = user == null ? "" : user.Info.Email;
 
-                imgUser.ImageSource = e.User == null ? null :
-                string.IsNullOrWhiteSpace(e.User.Info.PhotoUrl) ? null :
-                new BitmapImage(new Uri(e.User.Info.PhotoUrl));
+                imgUser.ImageSource = user == null ? null :
+                string.IsNullOrWhiteSpace(user.Info.PhotoUrl) ? null :
+                new BitmapImage(new Uri(user.Info.PhotoUrl));
             });
+        }
+        public void UpdateMemos(IEnumerable<Memo> memos)
+        {
+            Dispatcher.Invoke(() => lstMemo.ItemsSource = memos);
         }
         public void ShowAlert(string message)
         {
@@ -69,8 +78,8 @@ namespace WomoMemo
         }
         private void mnuLogout_Click(object sender, RoutedEventArgs e)
         {
-            App.Memos.Clear();
             FirebaseUI.Instance.Client.SignOut();
+            App.Memos.Clear();
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
@@ -80,18 +89,15 @@ namespace WomoMemo
         // Body
         private void Border_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            //int id = (int)((Border)sender).Tag;
-            //for (int i = 0; i < App.Memos.Count; i++)
-            //    if (App.Memos[i].Id == id)
-            //    {
-            //        if (App.MemoWins.ContainsKey(id)) App.MemoWins[id].Show();
-            //        else
-            //        {
-            //            new MemoWindow(App.Memos[i]).Show();
-            //            Config.Save();
-            //        }
-            //        App.MemoWins[id].Focus();
-            //    }
+            string key = (string)((Border)sender).Tag;
+
+            if (!App.MemoWins.ContainsKey(key))
+            {
+                App.MemoWins.Add(key, new MemoWindow(key, App.Memos[key]));
+                Config.Save();
+            }
+            App.MemoWins[key].Show();
+            App.MemoWins[key].Focus();
         }
     }
 }

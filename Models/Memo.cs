@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WomoMemo.Models
 {
-    public class Memo
+    public class Memo : IEquatable<Memo>
     {
         public string Key { get; set; }
         public string Title { get; set; }
@@ -13,20 +13,38 @@ namespace WomoMemo.Models
         public HashSet<int>? Checked { get; set; }
         public DateTime? Delete { get; set; }
 
-        public static Memo Empty
+        public string BackgroundColor
         {
-            get { return new Memo("", "", "", "clear", false, null, null); }
+            get { return ColorMap.Background(Color); }
+        }
+        public string BorderColor
+        {
+            get { return ColorMap.Border(Color); }
         }
 
-        public Memo(string key, string title, string content, string color, bool archive, HashSet<int>? @checked, DateTime? delete)
+        public static Memo Empty => new("", "", "", "clear", false, null, null);
+        public Memo(string key, string title, string content, string color, bool archive, string? @checked, string? delete)
         {
             Key = key;
             Title = title;
             Content = content;
             Color = color;
             Archive = archive;
-            Checked = @checked;
-            Delete = delete;
+            //Checked = @checked;
+            //Delete = delete;
+        }
+
+        public bool Equals(Memo? other)
+        {
+            if (other == null) return false;
+
+            return Title == other.Title &&
+                Content == other.Content &&
+                Color == other.Color &&
+                Archive == other.Archive &&
+                ((Checked == null && other.Checked == null) ||
+                (Checked!.SetEquals(other.Checked!))) &&
+                Delete == other.Delete;
         }
     }
 }

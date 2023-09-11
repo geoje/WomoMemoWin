@@ -1,6 +1,9 @@
 ﻿using Firebase.Auth.Providers;
 using Firebase.Auth.Repository;
 using Firebase.Auth.UI;
+using Firebase.Database;
+using Firebase.Database.Query;
+using System.Reactive.Linq;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
@@ -9,6 +12,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using WomoMemo.Models;
 using WomoMemo.Views;
+using System;
+using Firebase.Auth;
+using Firebase.Database.Streaming;
 
 namespace WomoMemo
 {
@@ -16,12 +22,15 @@ namespace WomoMemo
     {
         readonly static string FIREBASE_API_KEY = "AIzaSyBegDS_abY3Jl9FsldvKR2sP_YpSkzobjc";
         readonly static string FIREBASE_AUTH_DOMAIN = "womoso.firebaseapp.com";
-        readonly static string FIREBASE_PRIVACY_POLICY_URL = "";
-        readonly static string FIREBASE_TERMS_IF_SERVICE_URL = "";
+        readonly static string FIREBASE_PRIVACY_POLICY_URL = "https://www.womosoft.com/privacy_policy";
+        readonly static string FIREBASE_TERMS_OF_SERVICE_URL = "https://www.womosoft.com/terms_of_service";
+        public readonly static string FIREBASE_DB_URL = "https://womoso-default-rtdb.firebaseio.com";
+        public readonly static string APP_NAME = "WomoMemo";
 
         public static MainWindow? MainWin;
         public static Dictionary<string, MemoWindow> MemoWins = new Dictionary<string, MemoWindow>();
-        public static ObservableCollection<Memo> Memos = new ObservableCollection<Memo>();
+        public static Dictionary<string, Memo> Memos = new Dictionary<string, Memo>();
+        public static IDisposable? Observable;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -43,9 +52,10 @@ namespace WomoMemo
                 AuthDomain = FIREBASE_AUTH_DOMAIN,
                 Providers = new FirebaseAuthProvider[] { new GoogleProvider() },
                 PrivacyPolicyUrl = FIREBASE_PRIVACY_POLICY_URL,
-                TermsOfServiceUrl = FIREBASE_TERMS_IF_SERVICE_URL,
-                UserRepository = new FileUserRepository("WomoMemo")
+                TermsOfServiceUrl = FIREBASE_TERMS_OF_SERVICE_URL,
+                UserRepository = new FileUserRepository(APP_NAME)
             });
+            FirebaseUI.Instance.Client.AuthStateChanged += AuthStateChanged;
 
             //// Open all memo windows
             //Config.OpenedMemos.ForEach(jObj => {
@@ -97,6 +107,66 @@ namespace WomoMemo
             base.OnExit(e);
         }
 
+        private void AuthStateChanged(object? sender, UserEventArgs e)
+        {
+            if (MainWin != null) MainWin.UpdateUser(e.User);
+
+            if (e.User == null)
+            {
+                Observable?.Dispose();
+                Observable = null;
+            }
+            else
+            {
+                var firebase = new FirebaseClient(
+                    FIREBASE_DB_URL,
+                    new FirebaseOptions
+                    {
+                        AuthTokenAsyncFactory = () =>
+                        Task.FromResult(e.User.Credential.IdToken)
+                    });
+                Observable = firebase
+                  .Child("memos")
+                  .Child(e.User.Uid)
+                  .AsObservable<Memo>()
+                  .Subscribe(MemoUpdated);
+            }
+        }
+        private void MemoUpdated(FirebaseEvent<Memo> e)
+        {
+            // Check if the memo need to update
+            Memo memo = e.Object;
+            memo.Key = e.Key;
+            if (Memos.ContainsKey(e.Key))
+            {
+                if (e.EventType == FirebaseEventType.Delete)
+                    Memos.Remove(e.Key);
+                else if (Memos[e.Key].Equals(memo))
+                    return;
+            }
+            else
+            {
+                if (e.EventType == FirebaseEventType.InsertOrUpdate)
+                    Memos.Add(e.Key, memo);
+            }
+
+            // Update main window
+            if (MainWin != null)
+                MainWin.UpdateMemos(Memos.Values.ToList());
+
+            // Update memo windows
+            if (MemoWins.ContainsKey(e.Key))
+            {
+                if (e.EventType == FirebaseEventType.InsertOrUpdate)
+                    MemoWins[e.Key].UpdateMemo(memo);
+                else if (e.EventType == FirebaseEventType.Delete)
+                {
+                    MemoWins[e.Key].Close();
+                    MemoWins.Remove(e.Key);
+                    Config.Save();
+                }
+            }
+        }
         public static async Task CreateNewMemo()
         {
             //if (Memos.Count > 0 && Memos[0].Id == Memo.Empty.Id) return;

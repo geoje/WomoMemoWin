@@ -30,7 +30,13 @@ namespace WomoMemo.Models
 
         public static string Background(string color)
         {
+            if (!BACKGROUND_COLORS.ContainsKey(color)) color = "clear";
             return BACKGROUND_COLORS[color];
+        }
+        public static string Border(string color)
+        {
+            if (!BACKGROUND_COLORS.ContainsKey(color)) color = "clear";
+            return color == "clear" ? "#1F000000" : BACKGROUND_COLORS[color];
         }
     }
 }

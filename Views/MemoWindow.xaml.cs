@@ -21,18 +21,15 @@ namespace WomoMemo.Views
         public Memo Memo;
         public Timer? ResizeTimer, PutMemoTimer;
 
+        // Window
         public MemoWindow(string key, Memo memo)
         {
             InitializeComponent();
             Key = key;
             Memo = memo;
 
-            // Update title, content, bgcolor, ...
-            if (string.IsNullOrEmpty(key))
-            {
-                App.MemoWins.Add(key, this);
-                UpdateMemo(memo);
-            }
+            // Update controls
+            UpdateMemo(memo);
 
             // Add color changer panel
             int i = 0;
@@ -79,22 +76,22 @@ namespace WomoMemo.Views
             App.MemoWins.Remove(Key);
         }
 
+        // Func
         public void UpdateMemo(Memo memo)
         {
             Memo = memo;
             Title = txtTitle.Text = memo.Title;
             txtContent.Text = memo.Content;
-            Background = grdHeader.Background = new BrushConverter().ConvertFrom(ColorMap.Background(memo.Color)) as SolidColorBrush;
+            Background = grdHeader.Background =
+                new BrushConverter() 
+                .ConvertFrom(ColorMap.Background(memo.Color))
+                as SolidColorBrush;
         }
 
         // Header
         private void grdHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
-            {
-                DragMove();
-                Config.Save();
-            }
+            if (e.ChangedButton == MouseButton.Left) DragMove();
         }
         private void btnList_Click(object sender, RoutedEventArgs e)
         {
@@ -131,9 +128,9 @@ namespace WomoMemo.Views
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            //App.MemoWins.Remove(Memo.Id);
-            //Config.Save();
-            //Close();
+            App.MemoWins.Remove(Key);
+            Config.Save();
+            Close();
         }
 
         // Body
