@@ -9,18 +9,23 @@ using Firebase.Auth.UI;
 using WomoMemo.Models;
 using System.Collections.Generic;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
 
 namespace WomoMemo
 {
     public partial class MainWindow : Window
     {
+        ObservableCollection<Memo> Memos = new();
+
         // Window
         public MainWindow()
         {
             InitializeComponent();
 
             UpdateUser(FirebaseUI.Instance.Client.User);
-            lstMemo.ItemsSource = App.Memos.Values;
+            foreach (Memo memo in App.Memos.Values)
+                Memos.Add(memo);
+            lstMemo.ItemsSource = Memos;
         }
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -45,7 +50,12 @@ namespace WomoMemo
         }
         public void UpdateMemos(IEnumerable<Memo> memos)
         {
-            Dispatcher.Invoke(() => lstMemo.ItemsSource = memos);
+            Dispatcher.Invoke(() =>
+            {
+                Memos.Clear();
+                foreach (Memo memo in memos)
+                    Memos.Add(memo);
+            });
         }
         public void ShowAlert(string message)
         {
@@ -61,9 +71,20 @@ namespace WomoMemo
         {
             if (e.ChangedButton == MouseButton.Left) DragMove();
         }
+        private void btnMenu_Click(object sender, RoutedEventArgs e)
+        {
+            btnMenu.ContextMenu.PlacementTarget = btnMenu;
+            btnMenu.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            btnMenu.ContextMenu.IsOpen = true;
+            e.Handled = true;
+        }
+        private void mnuNav_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
         private async void btnNew_Click(object sender, RoutedEventArgs e)
         {
-            await App.CreateNewMemo();
+            await App.CreateMemo();
         }
         private void btnUser_Click(object sender, RoutedEventArgs e)
         {
@@ -93,7 +114,7 @@ namespace WomoMemo
 
             if (!App.MemoWins.ContainsKey(key))
             {
-                App.MemoWins.Add(key, new MemoWindow(key, App.Memos[key]));
+                App.MemoWins.Add(key, new MemoWindow(App.Memos[key]));
                 Config.Save();
             }
             App.MemoWins[key].Show();

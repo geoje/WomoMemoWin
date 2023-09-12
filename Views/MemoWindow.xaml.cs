@@ -1,9 +1,8 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,19 +16,17 @@ namespace WomoMemo.Views
     {
         bool _loaded = false;
 
-        public string Key;
         public Memo Memo;
         public Timer? ResizeTimer, PutMemoTimer;
 
         // Window
-        public MemoWindow(string key, Memo memo)
+        public MemoWindow(Memo memo)
         {
             InitializeComponent();
-            Key = key;
             Memo = memo;
 
             // Update controls
-            UpdateMemo(memo);
+            UpdateMemo(Memo);
 
             // Add color changer panel
             int i = 0;
@@ -73,19 +70,26 @@ namespace WomoMemo.Views
         }
         private void window_Closing(object sender, CancelEventArgs e)
         {
-            App.MemoWins.Remove(Key);
+            App.MemoWins.Remove(Memo.Key);
         }
 
         // Func
         public void UpdateMemo(Memo memo)
         {
-            Memo = memo;
-            Title = txtTitle.Text = memo.Title;
-            txtContent.Text = memo.Content;
-            Background = grdHeader.Background =
-                new BrushConverter() 
-                .ConvertFrom(ColorMap.Background(memo.Color))
-                as SolidColorBrush;
+            Dispatcher.Invoke(() =>
+            {
+                Memo = memo;
+                Title = txtTitle.Text = memo.Title;
+                txtContent.Text = memo.Content;
+                Background = grdHeader.Background =
+                    new BrushConverter()
+                    .ConvertFrom(ColorMap.Background(memo.Color))
+                    as SolidColorBrush;
+                btnCheckbox.Visibility = Memo.Checked == null ? Visibility.Visible : Visibility.Collapsed;
+                btnUncheckbox.Visibility = Memo.Checked == null ? Visibility.Collapsed : Visibility.Visible;
+                btnArchive.Visibility = Memo.Archive ? Visibility.Collapsed : Visibility.Visible;
+                btnUnarchive.Visibility = Memo.Archive ? Visibility.Visible : Visibility.Collapsed;
+            });
         }
 
         // Header
@@ -101,34 +105,15 @@ namespace WomoMemo.Views
         }
         private async void btnNew_Click(object sender, RoutedEventArgs e)
         {
-            //await App.CreateNewMemo();
+            await App.CreateMemo();
         }
         private async void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            //try
-            //{
-            //    Memo? appMemo = App.Memos.Where(memo => memo == Memo.Id).FirstOrDefault();
-            //    if (appMemo != null)
-            //    {
-            //        int idx = App.Memos.IndexOf(appMemo);
-            //        App.Memos.RemoveAt(idx);
-            //        App.MemoWins.Remove(Memo.Id);
-            //    }
-
-            //    await App.Client.DeleteAsync("/api/memos/" + Memo.Id);
-
-            //    Config.Save();
-            //    Close();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Trace.TraceError(ex.ToString());
-            //    App.MainWin?.ShowAlert("Error on deleting memo");
-            //}
+            await App.DeleteMemo(Memo.Key);
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            App.MemoWins.Remove(Key);
+            App.MemoWins.Remove(Memo.Key);
             Config.Save();
             Close();
         }
@@ -136,59 +121,57 @@ namespace WomoMemo.Views
         // Body
         private void memoChanged(object sender, EventArgs e)
         {
-            //if (!_loaded) return;
-            //Trace.WriteLine(Memo.Id);
+            if (!_loaded) return;
+            Trace.WriteLine(((Control)sender).Name, "[memoChanged]");
 
-            //// Update my memo instance
-            //Control sndCon = (Control)sender;
-            //if (sndCon.Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
-            //else if (sndCon.Name == "txtContent") Memo.Content = txtContent.Text;
-            //else if (((WrapPanel)sndCon.Parent).Name == "pnlColor")
-            //{
-            //    Memo.Color = (string)sndCon.Tag;
-            //    Background = grdHeader.Background = sndCon.Background;
-            //}
+            // Update my memo instance
+            Control sndCon = (Control)sender;
+            if (sndCon.Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
+            else if (sndCon.Name == "txtContent") Memo.Content = txtContent.Text;
+            else if (((WrapPanel)sndCon.Parent).Name == "pnlColor")
+            {
+                Memo.Color = (string)sndCon.Tag;
+                Background = grdHeader.Background = sndCon.Background;
+            }
+            else if (sndCon.Name == "btnCheckbox")
+            {
+                Memo.Checked = new HashSet<int>();
+                btnCheckbox.Visibility = Visibility.Collapsed;
+                btnUncheckbox.Visibility = Visibility.Visible;
+            }
+            else if (sndCon.Name == "btnUncheckbox")
+            {
+                Memo.Checked = null;
+                btnCheckbox.Visibility = Visibility.Visible;
+                btnUncheckbox.Visibility = Visibility.Collapsed;
+            }
+            else if (sndCon.Name == "btnArchive")
+            {
+                Memo.Archive = true;
+                btnArchive.Visibility = Visibility.Collapsed;
+                btnUnarchive.Visibility = Visibility.Visible;
+            }
+            else if (sndCon.Name == "btnUnarchive")
+            {
+                Memo.Archive = false;
+                btnArchive.Visibility = Visibility.Visible;
+                btnUnarchive.Visibility = Visibility.Collapsed;
+            }
 
-            //// Update App memo
-            //Memo? appMemo = App.Memos.Where(memo => memo.Id == Memo.Id).FirstOrDefault();
-            //if (appMemo != null)
-            //{
-            //    int idx = App.Memos.IndexOf(appMemo);
-            //    App.Memos.Insert(idx, Memo);
-            //    App.Memos.RemoveAt(idx + 1);
-            //}
+            // Put memo to server
+            if (PutMemoTimer == null)
+                PutMemoTimer = new Timer(async _ =>
+                {
+                    if (!App.Memos.Any(memo => memo.Key == Memo.Key)) return;
 
-            //// Put memo to server
-            //if (PutMemoTimer == null)
-            //    PutMemoTimer = new Timer(async _ =>
-            //    {
-            //        if (!App.Memos.Any(memo => memo.Id == Memo.Id)) return;
+                    await App.UpdateMemo(Memo);
 
-            //        try
-            //        {
-            //            JObject jObj = new JObject
-            //            {
-            //                { "title", Memo.Title },
-            //                { "content", Memo.Content },
-            //                { "color", Memo.Color },
-            //                { "checkBox", Memo.Checkbox },
-            //            };
-            //            StringContent content = new StringContent(jObj.ToString(Newtonsoft.Json.Formatting.None));
-
-            //            (await App.Client.PutAsync("/api/memos/" + Memo.Id, content)).EnsureSuccessStatusCode();
-            //        }
-            //        catch (Exception ex)
-            //        {
-            //            Trace.TraceError(ex.ToString());
-            //            App.MainWin?.ShowAlert("Error on putting memo");
-            //        }
-
-            //        PutMemoTimer?.Dispose();
-            //        PutMemoTimer = null;
-            //    }, null, 1000, Timeout.Infinite);
-            //// Throttle
-            //else
-            //    PutMemoTimer.Change(1000, Timeout.Infinite);
+                    PutMemoTimer?.Dispose();
+                    PutMemoTimer = null;
+                }, null, 1000, Timeout.Infinite);
+            // Throttle
+            else
+                PutMemoTimer.Change(1000, Timeout.Infinite);
         }
     }
 }

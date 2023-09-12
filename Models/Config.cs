@@ -35,7 +35,7 @@ namespace WomoMemo.Models
             File.WriteAllTextAsync(GetDataPath(), JsonConvert.SerializeObject(new JObject
             {
                 { "OpenedMemos", new JArray(App.MemoWins.Values.Select(memoWin => JObject.FromObject(new {
-                    key = memoWin.Key,
+                    key = memoWin.Memo.Key,
                     x = memoWin.window.Left,
                     y = memoWin.window.Top,
                     w = memoWin.window.Width,

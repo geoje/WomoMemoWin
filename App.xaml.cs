@@ -5,7 +5,6 @@ using Firebase.Database;
 using Firebase.Database.Query;
 using System.Reactive.Linq;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,10 +14,12 @@ using WomoMemo.Views;
 using System;
 using Firebase.Auth;
 using Firebase.Database.Streaming;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace WomoMemo
 {
-    public partial class App : Application
+    public partial class App : System.Windows.Application
     {
         readonly static string FIREBASE_API_KEY = "AIzaSyBegDS_abY3Jl9FsldvKR2sP_YpSkzobjc";
         readonly static string FIREBASE_AUTH_DOMAIN = "womoso.firebaseapp.com";
@@ -30,7 +31,9 @@ namespace WomoMemo
         public static MainWindow? MainWin;
         public static Dictionary<string, MemoWindow> MemoWins = new Dictionary<string, MemoWindow>();
         public static Dictionary<string, Memo> Memos = new Dictionary<string, Memo>();
-        public static IDisposable? Observable;
+
+        static FirebaseClient? firebase;
+        static IDisposable? Observable;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -57,39 +60,41 @@ namespace WomoMemo
             });
             FirebaseUI.Instance.Client.AuthStateChanged += AuthStateChanged;
 
-            //// Open all memo windows
-            //Config.OpenedMemos.ForEach(jObj => {
-            //    int memoId = jObj["id"]?.ToObject<int>() ?? -1;
-            //    if (memoId == -1) return;
+            // Open all memo windows
+            Config.Load();
+            Config.OpenedMemos.ForEach(jObj =>
+            {
+                string? memoKey = jObj["key"]?.ToObject<string>();
+                if (string.IsNullOrEmpty(memoKey)) return;
 
-            //    Memo memo = Memo.Empty;
-            //    memo.Key = memoId;
-            //    MemoWindow memoWin = new MemoWindow(memo);
-            //    memoWin.WindowStartupLocation = WindowStartupLocation.Manual;
+                Memo memo = Memo.Empty;
+                memo.Key = memoKey;
+                MemoWindow memoWin = new MemoWindow(memo);
+                memoWin.WindowStartupLocation = WindowStartupLocation.Manual;
 
-            //    // Intersect window with screen
-            //    Rectangle windowBounds = new Rectangle(
-            //        (int)(jObj["x"]?.ToObject<double>() ?? memoWin.window.Left),
-            //        (int)(jObj["y"]?.ToObject<double>() ?? memoWin.window.Top),
-            //        (int)(jObj["w"]?.ToObject<double>() ?? memoWin.window.Width),
-            //        (int)(jObj["h"]?.ToObject<double>() ?? memoWin.window.Height));
-            //    bool intersect = false;
-            //    foreach (Screen screen in Screen.AllScreens)
-            //        if (screen.Bounds.IntersectsWith(windowBounds))
-            //        {
-            //            intersect = true;
-            //            break;
-            //        }
-            //    if (intersect)
-            //    {
-            //        memoWin.window.Left = windowBounds.Left;
-            //        memoWin.window.Top = windowBounds.Top;
-            //        memoWin.window.Width = windowBounds.Width;
-            //        memoWin.window.Height = windowBounds.Height;
-            //    }
+                // Intersect window with screen
+                Rectangle windowBounds = new Rectangle(
+                    (int)(jObj["x"]?.ToObject<double>() ?? memoWin.window.Left),
+                    (int)(jObj["y"]?.ToObject<double>() ?? memoWin.window.Top),
+                    (int)(jObj["w"]?.ToObject<double>() ?? memoWin.window.Width),
+                    (int)(jObj["h"]?.ToObject<double>() ?? memoWin.window.Height));
+                bool intersect = false;
+                foreach (Screen screen in Screen.AllScreens)
+                    if (screen.Bounds.IntersectsWith(windowBounds))
+                    {
+                        intersect = true;
+                        break;
+                    }
+                if (intersect)
+                {
+                    memoWin.window.Left = windowBounds.Left;
+                    memoWin.window.Top = windowBounds.Top;
+                    memoWin.window.Width = windowBounds.Width;
+                    memoWin.window.Height = windowBounds.Height;
+                }
 
-            //    memoWin.Show();
-            //});
+                memoWin.Show();
+            });
 
             // Open main window if there is no opened memo
             if (Config.OpenedMemos.Count == 0) (MainWin = new MainWindow()).Show();
@@ -115,21 +120,23 @@ namespace WomoMemo
             {
                 Observable?.Dispose();
                 Observable = null;
+                firebase?.Dispose();
+                firebase = null;
             }
             else
             {
-                var firebase = new FirebaseClient(
+                firebase = new FirebaseClient(
                     FIREBASE_DB_URL,
                     new FirebaseOptions
                     {
-                        AuthTokenAsyncFactory = () =>
-                        Task.FromResult(e.User.Credential.IdToken)
+                        AuthTokenAsyncFactory = () => Task.FromResult(
+                            FirebaseUI.Instance.Client.User.Credential.IdToken)
                     });
                 Observable = firebase
                   .Child("memos")
                   .Child(e.User.Uid)
                   .AsObservable<Memo>()
-                  .Subscribe(MemoUpdated);
+                  .Subscribe(MemoUpdated, HandleSubscribeError);
             }
         }
         private void MemoUpdated(FirebaseEvent<Memo> e)
@@ -141,8 +148,6 @@ namespace WomoMemo
             {
                 if (e.EventType == FirebaseEventType.Delete)
                     Memos.Remove(e.Key);
-                else if (Memos[e.Key].Equals(memo))
-                    return;
             }
             else
             {
@@ -152,7 +157,7 @@ namespace WomoMemo
 
             // Update main window
             if (MainWin != null)
-                MainWin.UpdateMemos(Memos.Values.ToList());
+                MainWin.UpdateMemos(Memos.Values);
 
             // Update memo windows
             if (MemoWins.ContainsKey(e.Key))
@@ -167,41 +172,52 @@ namespace WomoMemo
                 }
             }
         }
-        public static async Task CreateNewMemo()
+        private void HandleSubscribeError(Exception ex)
         {
-            //if (Memos.Count > 0 && Memos[0].Id == Memo.Empty.Id) return;
+            if (MainWin != null)
+            {
+                MainWin.ShowAlert("[HandleSubscribeError]\n" + ex.Message);
+            }
+        }
 
-            //MemoWindow memoWindow = new MemoWindow(Memo.Empty);
-            //Memos.Insert(0, Memo.Empty);
-            //memoWindow.Show();
+        public static async Task<string> CreateMemo()
+        {
+            if (firebase == null) return "";
 
-            //try
-            //{
-            //    JObject jObj = new JObject
-            //    {
-            //        { "title", Memo.Empty.Title },
-            //        { "content", Memo.Empty.Content },
-            //        { "color", Memo.Empty.Color },
-            //        { "checkBox", Memo.Empty.Checkbox },
-            //    };
-            //    StringContent content = new StringContent(jObj.ToString(Newtonsoft.Json.Formatting.None));
+            FirebaseObject<Memo> e = await firebase
+                .Child("memos")
+                .Child(FirebaseUI.Instance.Client.User.Uid)
+                .PostAsync(Memo.Empty);
 
-            //    var response = await Client.PostAsync("/api/memos", content);
-            //    response.EnsureSuccessStatusCode();
-            //    JObject result = JObject.Parse(await response.Content.ReadAsStringAsync());
+            MemoWindow memoWin = new MemoWindow(Memo.Empty);
+            memoWin.Show();
+            Memos.Add(e.Key, Memo.Empty);
+            MemoWins.Add(e.Key, memoWin);
 
-            //    memoWindow.Memo.Id = result["id"]?.ToObject<int>() ?? Memo.Empty.Id;
-            //    if (memoWindow.Memo.Id == Memo.Empty.Id) throw new Exception();
+            return e.Key;
+        }
+        public static async Task UpdateMemo(Memo memo)
+        {
+            if (firebase == null) return;
 
-            //    MemoWins.Add(memoWindow.Memo.Id, memoWindow);
-            //}
-            //catch (Exception ex)
-            //{
-            //    if (Memos.Count > 0 && Memos[0].Id == Memo.Empty.Id) Memos.RemoveAt(0);
-            //    memoWindow.Close();
-            //    Trace.TraceError(ex.ToString());
-            //    MainWin?.ShowAlert("Error on posting memo");
-            //}
+            await firebase
+                .Child("memos")
+                .Child(FirebaseUI.Instance.Client.User.Uid)
+                .Child(memo.Key)
+                .PutAsync(Memo.Empty);
+        }
+        public static async Task DeleteMemo(string key)
+        {
+            if (firebase == null) return;
+
+            await firebase
+                .Child("memos")
+                .Child(FirebaseUI.Instance.Client.User.Uid)
+                .Child(key)
+                .DeleteAsync();
+
+            Memos.Remove(key);
+            MemoWins.Remove(key);
         }
     }
 }

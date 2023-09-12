@@ -42,6 +42,8 @@
                     <ColumnDefinition Width="32"/>
                     <ColumnDefinition Width="32"/>
                     <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="32"/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="btnList" ToolTip="List" Grid.Column="0" Click="btnList_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="Menu" Foreground="Gray" />
@@ -49,14 +51,26 @@
                 <Button x:Name="btnNew" ToolTip="New" Grid.Column="1" Click="btnNew_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
                 </Button>
-                <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="3" Click="btnDelete_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="TrashCanOutline" Foreground="Gray" />
-                </Button>
-                <Button x:Name="btnColor" ToolTip="Color" Grid.Column="4" Padding="8" Style="{StaticResource MaterialDesignFlatButton}"
+                <Button x:Name="btnColor" ToolTip="Color" Grid.Column="3" Padding="8" Style="{StaticResource MaterialDesignFlatButton}"
                     Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" CommandParameter="{x:Static Dock.Bottom}">
                     <materialDesign:PackIcon Kind="PaletteOutline" Foreground="Gray" />
                 </Button>
-                <Button x:Name="btnClose" ToolTip="Close" Grid.Column="5" Click="btnClose_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button x:Name="btnCheckbox" ToolTip="Enable Checkbox" Grid.Column="4" Click="memoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Kind="CheckAll" Foreground="Gray" />
+                </Button>
+                <Button x:Name="btnUncheckbox" ToolTip="Disable Checkbox" Grid.Column="4" Click="memoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Kind="CheckboxIndeterminateOutline" Foreground="Gray" />
+                </Button>
+                <Button x:Name="btnArchive" ToolTip="Archive" Grid.Column="5" Click="memoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Kind="ArchiveArrowDownOutline" Foreground="Gray" />
+                </Button>
+                <Button x:Name="btnUnarchive" ToolTip="Unarchive" Grid.Column="5" Click="memoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Kind="ArchiveArrowUp" Foreground="Gray" />
+                </Button>
+                <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="6" Click="btnDelete_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon Kind="TrashCanOutline" Foreground="Gray" />
+                </Button>
+                <Button x:Name="btnClose" ToolTip="Close" Grid.Column="7" Click="btnClose_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="Close" Foreground="Gray" />
                 </Button>
             </Grid>
