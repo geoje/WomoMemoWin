@@ -166,8 +166,11 @@ namespace WomoMemo
                     MemoWins[e.Key].UpdateMemo(memo);
                 else if (e.EventType == FirebaseEventType.Delete)
                 {
-                    MemoWins[e.Key].Close();
-                    MemoWins.Remove(e.Key);
+                    Dispatcher.Invoke(() =>
+                    {
+                        MemoWins[e.Key].Close();
+                        MemoWins.Remove(e.Key);
+                    });
                     Config.Save();
                 }
             }
