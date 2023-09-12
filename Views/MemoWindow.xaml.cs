@@ -50,12 +50,22 @@ namespace WomoMemo.Views
             foreach (Control control in grdHeader.Children)
                 control.Visibility = Visibility.Visible;
             txtContent.VerticalScrollBarVisibility = ScrollBarVisibility.Visible;
+
+            grdHeader.Background =
+                    new BrushConverter()
+                    .ConvertFrom(ColorMap.Border(Memo.Color))
+                    as SolidColorBrush;
         }
         private void window_Deactivated(object sender, EventArgs e)
         {
             foreach (Control control in grdHeader.Children)
                 control.Visibility = Visibility.Collapsed;
             txtContent.VerticalScrollBarVisibility = ScrollBarVisibility.Hidden;
+
+            grdHeader.Background =
+                    new BrushConverter()
+                    .ConvertFrom(ColorMap.Background(Memo.Color))
+                    as SolidColorBrush;
         }
         private void window_SizeChanged(object sender, SizeChangedEventArgs e)
         {
@@ -78,7 +88,6 @@ namespace WomoMemo.Views
         {
             Dispatcher.Invoke(() =>
             {
-                Trace.WriteLine(memo.Color);
                 Memo = memo;
                 Title = txtTitle.Text = memo.Title;
                 txtContent.Text = memo.Content;
@@ -86,9 +95,25 @@ namespace WomoMemo.Views
                     new BrushConverter()
                     .ConvertFrom(ColorMap.Background(memo.Color))
                     as SolidColorBrush;
-                btnCheckbox.Visibility = Memo.Checked == null ? Visibility.Visible : Visibility.Collapsed;
-                btnArchive.Visibility = Memo.Archive ? Visibility.Collapsed : Visibility.Visible;
+                UpdateCheckbox(memo.Checked);
+                UpdateArchive(memo.Archive);
             });
+        }
+        private void UpdateCheckbox(HashSet<int>? @checked = null)
+        {
+            Memo.Checked = @checked;
+            btnCheckbox.ToolTip = @checked == null ? "Enable Checkbox" : "Disable Checkbox";
+            icoCheckbox.Kind = @checked == null ?
+                MaterialDesignThemes.Wpf.PackIconKind.CheckAll :
+                MaterialDesignThemes.Wpf.PackIconKind.CheckboxIndeterminateOutline;
+        }
+        private void UpdateArchive(bool archive)
+        {
+            Memo.Archive = archive;
+            btnArchive.ToolTip = archive ? "Unarchive" : "Archive";
+            icoArchive.Kind = archive ?
+                MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowUp :
+                MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowDownOutline;
         }
 
         // Header
@@ -126,22 +151,8 @@ namespace WomoMemo.Views
             Control sndCon = (Control)sender;
             if (sndCon.Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
             else if (sndCon.Name == "txtContent") Memo.Content = txtContent.Text;
-            else if (sndCon.Name == "btnCheckbox")
-            {
-                Memo.Checked = Memo.Checked == null ? new HashSet<int>() : null;
-                btnCheckbox.ToolTip = Memo.Checked == null ? "Enable Checkbox" : "Disable Checkbox";
-                icoCheckbox.Kind = Memo.Checked == null ?
-                    MaterialDesignThemes.Wpf.PackIconKind.CheckAll :
-                    MaterialDesignThemes.Wpf.PackIconKind.CheckboxIndeterminateOutline;
-            }
-            else if (sndCon.Name == "btnArchive")
-            {
-                Memo.Archive = !Memo.Archive;
-                btnArchive.ToolTip = Memo.Archive ? "Unarchive" : "Archive";
-                icoArchive.Kind = Memo.Archive ?
-                    MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowUp :
-                    MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowDownOutline;
-            }
+            else if (sndCon.Name == "btnCheckbox") UpdateCheckbox(Memo.Checked == null ? new HashSet<int>() : null);
+            else if (sndCon.Name == "btnArchive") UpdateArchive(!Memo.Archive);
             else // Changed color
             {
                 Memo.Color = (string)sndCon.Tag;
