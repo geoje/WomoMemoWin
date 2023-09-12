@@ -1,21 +1,21 @@
-﻿using Firebase.Auth.Providers;
+﻿using Firebase.Auth;
+using Firebase.Auth.Providers;
 using Firebase.Auth.Repository;
 using Firebase.Auth.UI;
 using Firebase.Database;
 using Firebase.Database.Query;
-using System.Reactive.Linq;
+using Firebase.Database.Streaming;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using WomoMemo.Models;
 using WomoMemo.Views;
-using System;
-using Firebase.Auth;
-using Firebase.Database.Streaming;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace WomoMemo
 {
@@ -177,10 +177,10 @@ namespace WomoMemo
         }
         private void HandleSubscribeError(Exception ex)
         {
-            if (MainWin != null)
-            {
-                MainWin.ShowAlert("[HandleSubscribeError]\n" + ex.Message);
-            }
+            Debug.Fail(ex.Message);
+            Debug.Fail(ex.Source);
+            Debug.Fail(ex.ToString());
+            //FirebaseUI.Instance.Client.SignOut();
         }
 
         public static async Task<string> CreateMemo()
