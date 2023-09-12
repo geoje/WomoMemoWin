@@ -30,7 +30,7 @@ namespace WomoMemo.Views
 
             // Add color changer panel
             int i = 0;
-            var colorKeyList = ColorMap.BACKGROUND_COLORS.Keys.ToArray();
+            var colorKeyList = ColorMap.COLORS.Keys.ToArray();
             foreach (Button btnCol in pnlColor.Children)
             {
                 string colorKey = colorKeyList[i++];
@@ -38,7 +38,7 @@ namespace WomoMemo.Views
                 btnCol.Background = new BrushConverter().ConvertFrom(ColorMap.Background(colorKey)) as SolidColorBrush;
                 btnCol.BorderThickness = new Thickness();
                 btnCol.Margin = new Thickness(2);
-                btnCol.Click += memoChanged;
+                btnCol.Click += handleMemoChanged;
             }
         }
         private void window_Loaded(object sender, RoutedEventArgs e)
@@ -78,6 +78,7 @@ namespace WomoMemo.Views
         {
             Dispatcher.Invoke(() =>
             {
+                Trace.WriteLine(memo.Color);
                 Memo = memo;
                 Title = txtTitle.Text = memo.Title;
                 txtContent.Text = memo.Content;
@@ -86,9 +87,7 @@ namespace WomoMemo.Views
                     .ConvertFrom(ColorMap.Background(memo.Color))
                     as SolidColorBrush;
                 btnCheckbox.Visibility = Memo.Checked == null ? Visibility.Visible : Visibility.Collapsed;
-                btnUncheckbox.Visibility = Memo.Checked == null ? Visibility.Collapsed : Visibility.Visible;
                 btnArchive.Visibility = Memo.Archive ? Visibility.Collapsed : Visibility.Visible;
-                btnUnarchive.Visibility = Memo.Archive ? Visibility.Visible : Visibility.Collapsed;
             });
         }
 
@@ -119,43 +118,34 @@ namespace WomoMemo.Views
         }
 
         // Body
-        private void memoChanged(object sender, EventArgs e)
+        private void handleMemoChanged(object sender, EventArgs e)
         {
             if (!_loaded) return;
-            Trace.WriteLine(((Control)sender).Name, "[memoChanged]");
 
             // Update my memo instance
             Control sndCon = (Control)sender;
             if (sndCon.Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
             else if (sndCon.Name == "txtContent") Memo.Content = txtContent.Text;
-            else if (((WrapPanel)sndCon.Parent).Name == "pnlColor")
-            {
-                Memo.Color = (string)sndCon.Tag;
-                Background = grdHeader.Background = sndCon.Background;
-            }
             else if (sndCon.Name == "btnCheckbox")
             {
-                Memo.Checked = new HashSet<int>();
-                btnCheckbox.Visibility = Visibility.Collapsed;
-                btnUncheckbox.Visibility = Visibility.Visible;
-            }
-            else if (sndCon.Name == "btnUncheckbox")
-            {
-                Memo.Checked = null;
-                btnCheckbox.Visibility = Visibility.Visible;
-                btnUncheckbox.Visibility = Visibility.Collapsed;
+                Memo.Checked = Memo.Checked == null ? new HashSet<int>() : null;
+                btnCheckbox.ToolTip = Memo.Checked == null ? "Enable Checkbox" : "Disable Checkbox";
+                icoCheckbox.Kind = Memo.Checked == null ?
+                    MaterialDesignThemes.Wpf.PackIconKind.CheckAll :
+                    MaterialDesignThemes.Wpf.PackIconKind.CheckboxIndeterminateOutline;
             }
             else if (sndCon.Name == "btnArchive")
             {
-                Memo.Archive = true;
-                btnArchive.Visibility = Visibility.Collapsed;
-                btnUnarchive.Visibility = Visibility.Visible;
+                Memo.Archive = !Memo.Archive;
+                btnArchive.ToolTip = Memo.Archive ? "Unarchive" : "Archive";
+                icoArchive.Kind = Memo.Archive ?
+                    MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowUp :
+                    MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowDownOutline;
             }
-            else if (sndCon.Name == "btnUnarchive")
+            else // Changed color
             {
-                Memo.Archive = false;
-                btnArchive.Visibility = Visibility.Visible;
-                btnUnarchive.Visibility = Visibility.Collapsed;
+                Memo.Color = (string)sndCon.Tag;
+                Background = grdHeader.Background = sndCon.Background;
             }
 
             // Put memo to server

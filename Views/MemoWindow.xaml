@@ -55,17 +55,11 @@
                     Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" CommandParameter="{x:Static Dock.Bottom}">
                     <materialDesign:PackIcon Kind="PaletteOutline" Foreground="Gray" />
                 </Button>
-                <Button x:Name="btnCheckbox" ToolTip="Enable Checkbox" Grid.Column="4" Click="memoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="CheckAll" Foreground="Gray" />
+                <Button x:Name="btnCheckbox" ToolTip="Enable Checkbox" Grid.Column="4" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon x:Name="icoCheckbox" Kind="CheckAll" Foreground="Gray" />
                 </Button>
-                <Button x:Name="btnUncheckbox" ToolTip="Disable Checkbox" Grid.Column="4" Click="memoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="CheckboxIndeterminateOutline" Foreground="Gray" />
-                </Button>
-                <Button x:Name="btnArchive" ToolTip="Archive" Grid.Column="5" Click="memoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="ArchiveArrowDownOutline" Foreground="Gray" />
-                </Button>
-                <Button x:Name="btnUnarchive" ToolTip="Unarchive" Grid.Column="5" Click="memoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="ArchiveArrowUp" Foreground="Gray" />
+                <Button x:Name="btnArchive" ToolTip="Archive" Grid.Column="5" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon x:Name="icoArchive" Kind="ArchiveArrowDownOutline" Foreground="Gray" />
                 </Button>
                 <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="6" Click="btnDelete_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="TrashCanOutline" Foreground="Gray" />
@@ -76,10 +70,10 @@
             </Grid>
             <TextBox x:Name="txtTitle" Grid.Row="1" Margin="8,0" Padding="8"
                  Background="Transparent" BorderBrush="Transparent" FontWeight="Bold"
-                 materialDesign:HintAssist.Hint="Title" TextChanged="memoChanged" />
+                 materialDesign:HintAssist.Hint="Title" TextChanged="handleMemoChanged" />
             <TextBox x:Name="txtContent" Grid.Row="2" Margin="8,0,8,8" Padding="8"
                  Background="Transparent" BorderBrush="Transparent" TextWrapping="Wrap" AcceptsReturn="True"
-                 materialDesign:HintAssist.Hint="Content" TextChanged="memoChanged" VerticalScrollBarVisibility="Auto"/>
+                 materialDesign:HintAssist.Hint="Content" TextChanged="handleMemoChanged" VerticalScrollBarVisibility="Auto"/>
         </Grid>
     </materialDesign:DrawerHost>
 </Window>

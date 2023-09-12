@@ -109,7 +109,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="{Binding BorderColor}" Tag="{Binding Key}" BorderThickness="1" CornerRadius="4"  Width="262"
+                            <Border BorderBrush="{Binding BorderColor}" Tag="{Binding Key}" BorderThickness="1.2" CornerRadius="4"  Width="262"
                                     Background="{Binding BackgroundColor}" Padding="16" Margin="4,0,4,8" Cursor="Hand" MouseUp="Border_MouseUp">
                                 <StackPanel>
                                     <TextBlock Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Title}" FontWeight="Bold" />
