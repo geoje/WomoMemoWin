@@ -110,10 +110,11 @@
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border BorderBrush="{Binding BorderColor}" Tag="{Binding Key}" BorderThickness="1.2" CornerRadius="4"  Width="262"
-                                    Background="{Binding BackgroundColor}" Padding="16" Margin="4,0,4,8" Cursor="Hand" MouseUp="Border_MouseUp">
+                                    Background="{Binding BackgroundColor}" Padding="8" Margin="4,0,4,8" Cursor="Hand" MouseUp="Border_MouseUp">
                                 <StackPanel>
-                                    <TextBlock Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Title}" FontWeight="Bold" />
-                                    <TextBlock Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Content}" Margin="0,8,0,0" />
+                                    <TextBlock Visibility="{Binding VisibilityTitle}" Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Title}" FontWeight="Bold" />
+                                    <Separator Visibility="{Binding VisibilitySeparator}" BorderBrush="{Binding BorderColor}" Style="{StaticResource MaterialDesignDarkSeparator}" />
+                                    <TextBlock Visibility="{Binding VisibilityContent}" Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Content}" />
                                 </StackPanel>
                             </Border>
                         </DataTemplate>

@@ -191,9 +191,6 @@ namespace WomoMemo
                     Config.Save();
                 }
             }
-
-            // Test
-            Debug.WriteLine(JsonConvert.SerializeObject(memo));
         }
         private async Task<string> GetAccessTokenFromRefreshToken()
         {
@@ -228,7 +225,7 @@ namespace WomoMemo
                     Debug.WriteLine("newAccessToken is null or empty", "[HandleSubscribeError]");
                     FirebaseUI.Instance.Client.SignOut();
                     if (MainWin != null)
-                        MainWin.ShowAlert("Token refreshing was failed!\nPlease logout and login again.");
+                        MainWin.ShowAlert("Token refreshing was failed!\nPlease login again.");
                     return;
                 }
 
@@ -244,7 +241,7 @@ namespace WomoMemo
                     Debug.WriteLine(excep.ToString(), "[HandleSubscribeError SignInWithCredentialAsync]");
                     FirebaseUI.Instance.Client.SignOut();
                     if (MainWin != null)
-                        MainWin.ShowAlert("Token refreshing was failed!\nPlease logout and login again.");
+                        MainWin.ShowAlert("Token refreshing was failed!\nPlease login again.");
                     return;
                 }
                 if (userCredential.User == null)

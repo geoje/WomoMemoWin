@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace WomoMemo.Models
 {
@@ -33,14 +34,32 @@ namespace WomoMemo.Models
         [JsonIgnore]
         public HashSet<int>? _checked { get; set; }
         [JsonIgnore]
-        public string BackgroundColor
+        public string BackgroundColor { get { return ColorMap.Background(Color); } }
+        [JsonIgnore]
+        public string BorderColor { get { return ColorMap.Border(Color); } }
+        [JsonIgnore]
+        public Visibility VisibilityTitle
         {
-            get { return ColorMap.Background(Color); }
+            get { return string.IsNullOrEmpty(Title) ?
+                    Visibility.Collapsed : Visibility.Visible; }
         }
         [JsonIgnore]
-        public string BorderColor
+        public Visibility VisibilitySeparator
         {
-            get { return ColorMap.Border(Color); }
+            get
+            {
+                return string.IsNullOrEmpty(Title) || string.IsNullOrEmpty(Content) ?
+                    Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+        [JsonIgnore]
+        public Visibility VisibilityContent
+        {
+            get
+            {
+                return string.IsNullOrEmpty(Content) && !string.IsNullOrEmpty(Title) ?
+                    Visibility.Collapsed : Visibility.Visible;
+            }
         }
 
         public static Memo Empty => new("");
