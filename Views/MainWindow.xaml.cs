@@ -3,6 +3,7 @@ using Firebase.Auth.UI;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,6 +17,7 @@ namespace WomoMemo
     public partial class MainWindow : Window
     {
         ObservableCollection<Memo> Memos = new();
+        string ViewMode = "Memos";
 
         // Window
         public MainWindow()
@@ -23,7 +25,7 @@ namespace WomoMemo
             InitializeComponent();
 
             UpdateUser(FirebaseUI.Instance.Client.User);
-            foreach (Memo memo in App.Memos.Values)
+            foreach (Memo memo in App.Memos.Values.Where(memo => !memo.Archive && memo.Delete == null))
                 Memos.Add(memo);
             lstMemo.ItemsSource = Memos;
         }
@@ -48,12 +50,31 @@ namespace WomoMemo
                 new BitmapImage(new Uri(user.Info.PhotoUrl));
             });
         }
-        public void UpdateMemos(IEnumerable<Memo> memos)
+        public void UpdateMemosFromAppByView()
         {
             Dispatcher.Invoke(() =>
             {
+                Func<Memo, bool> filter = memo => false;
+                switch (ViewMode)
+                {
+                    case "Memos":
+                        mnuMemos.IsChecked = true;
+                        filter = memo => !memo.Archive && memo.Delete == null;
+                        break;
+
+                    case "Archive":
+                        mnuArchive.IsChecked = true;
+                        filter = memo => memo.Archive && memo.Delete == null;
+                        break;
+
+                    case "Trash":
+                        mnuTrash.IsChecked = true;
+                        filter = memo => memo.Delete != null;
+                        break;
+                }
+
                 Memos.Clear();
-                foreach (Memo memo in memos)
+                foreach (var memo in App.Memos.Values.Where(filter))
                     Memos.Add(memo);
             });
         }
@@ -80,7 +101,9 @@ namespace WomoMemo
         }
         private void mnuNav_Click(object sender, RoutedEventArgs e)
         {
-
+            mnuMemos.IsChecked = mnuArchive.IsChecked = mnuTrash.IsChecked = false;
+            ViewMode = ((Control)sender).Name.Substring(3);
+            UpdateMemosFromAppByView();
         }
         private async void btnNew_Click(object sender, RoutedEventArgs e)
         {

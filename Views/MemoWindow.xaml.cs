@@ -94,13 +94,13 @@ namespace WomoMemo.Views
                     new BrushConverter()
                     .ConvertFrom(ColorMap.Background(memo.Color))
                     as SolidColorBrush;
-                UpdateCheckbox(memo.Checked);
+                UpdateCheckbox(memo._checked);
                 UpdateArchive(memo.Archive);
             });
         }
         private void UpdateCheckbox(HashSet<int>? @checked = null)
         {
-            Memo.Checked = @checked;
+            Memo._checked = @checked;
             btnCheckbox.ToolTip = @checked == null ? "Enable Checkbox" : "Disable Checkbox";
             icoCheckbox.Kind = @checked == null ?
                 MaterialDesignThemes.Wpf.PackIconKind.CheckAll :

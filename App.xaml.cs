@@ -5,12 +5,17 @@ using Firebase.Auth.UI;
 using Firebase.Database;
 using Firebase.Database.Query;
 using Firebase.Database.Streaming;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Reactive.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -25,6 +30,7 @@ namespace WomoMemo
         readonly static string FIREBASE_AUTH_DOMAIN = "womoso.firebaseapp.com";
         readonly static string FIREBASE_PRIVACY_POLICY_URL = "https://www.womosoft.com/privacy_policy";
         readonly static string FIREBASE_TERMS_OF_SERVICE_URL = "https://www.womosoft.com/terms_of_service";
+        readonly static string GOOGLE_REFRESH_TOKEN_URL = "https://securetoken.googleapis.com/v1/token";
         public readonly static string FIREBASE_DB_URL = "https://womoso-default-rtdb.firebaseio.com";
         public readonly static string APP_NAME = "WomoMemo";
 
@@ -67,7 +73,7 @@ namespace WomoMemo
                 string? memoKey = jObj["key"]?.ToObject<string>();
                 if (string.IsNullOrEmpty(memoKey)) return;
 
-                Memo memo = Memo.Empty;
+                Memo memo = new();
                 memo.Key = memoKey;
                 MemoWindow memoWin = new MemoWindow(memo);
                 memoWin.WindowStartupLocation = WindowStartupLocation.Manual;
@@ -122,6 +128,14 @@ namespace WomoMemo
                 Observable = null;
                 firebase?.Dispose();
                 firebase = null;
+
+                foreach (var memoWin in MemoWins.Values)
+                    memoWin.Close();
+                Dispatcher.Invoke(() =>
+                {
+                    if (MainWin == null) MainWin = new MainWindow();
+                    MainWin.Show();
+                });
             }
             else
             {
@@ -136,7 +150,7 @@ namespace WomoMemo
                   .Child("memos")
                   .Child(e.User.Uid)
                   .AsObservable<Memo>()
-                  .Subscribe(MemoUpdated, HandleSubscribeError);
+                  .Subscribe(MemoUpdated, onError: HandleSubscribeError);
             }
         }
         private void MemoUpdated(FirebaseEvent<Memo> e)
@@ -157,7 +171,7 @@ namespace WomoMemo
 
             // Update main window
             if (MainWin != null)
-                MainWin.UpdateMemos(Memos.Values);
+                MainWin.UpdateMemosFromAppByView();
 
             // Update memo windows
             if (MemoWins.ContainsKey(e.Key))
@@ -174,13 +188,71 @@ namespace WomoMemo
                     Config.Save();
                 }
             }
+
+            // Test
+            Debug.WriteLine(JsonConvert.SerializeObject(memo));
         }
-        private void HandleSubscribeError(Exception ex)
+        private async Task<string> GetAccessTokenFromRefreshToken()
         {
-            Debug.Fail(ex.Message);
-            Debug.Fail(ex.Source);
-            Debug.Fail(ex.ToString());
-            //FirebaseUI.Instance.Client.SignOut();
+            string url = GOOGLE_REFRESH_TOKEN_URL + "?key=" + FIREBASE_API_KEY;
+            var content = JsonContent.Create(new
+            {
+                grant_type = "refresh_token",
+                refresh_token = FirebaseUI.Instance.Client.User.Credential.RefreshToken
+            });
+            using (var client = new HttpClient())
+            {
+                var response = await client.PostAsync(url, content);
+                try { response.EnsureSuccessStatusCode(); }
+                catch(Exception ex)
+                {
+                    Debug.WriteLine(ex.ToString(), "[GetAccessTokenFromRefreshToken]");
+                    return "";
+                }
+
+                JObject jObj = JObject.Parse(await response.Content.ReadAsStringAsync());
+                return jObj["access_token"]?.ToString() ?? "";
+            }
+        }
+        private async void HandleSubscribeError(Exception ex)
+        {
+            if (ex.ToString().Contains("401 (Unauthorized)"))
+            {
+                string newAccessToken = await GetAccessTokenFromRefreshToken();
+                Debug.WriteLine(newAccessToken, "[HandleSubscribeError Token]");
+                if (string.IsNullOrEmpty(newAccessToken))
+                {
+                    Debug.WriteLine("newAccessToken is null or empty", "[HandleSubscribeError]");
+                    FirebaseUI.Instance.Client.SignOut();
+                    if (MainWin != null)
+                        MainWin.ShowAlert("Token refreshing was failed!\nPlease logout and login again.");
+                    return;
+                }
+
+                var authCredential = GoogleProvider.GetCredential(newAccessToken);
+                UserCredential userCredential;
+                try
+                {
+                    // Need to fix 400 INVALID_IDP_RESPONSE
+                    userCredential = await FirebaseUI.Instance.Client.SignInWithCredentialAsync(authCredential);
+                }
+                catch (Exception excep)
+                {
+                    Debug.WriteLine(excep.ToString(), "[HandleSubscribeError SignInWithCredentialAsync]");
+                    FirebaseUI.Instance.Client.SignOut();
+                    if (MainWin != null)
+                        MainWin.ShowAlert("Token refreshing was failed!\nPlease logout and login again.");
+                    return;
+                }
+                if (userCredential.User == null)
+                {
+                    Debug.WriteLine("userCredential.User is null", "[HandleSubscribeError]");
+                    FirebaseUI.Instance.Client.SignOut();
+                    if (MainWin != null)
+                        MainWin.ShowAlert("Token refreshing was failed!\nPlease login again.");
+                    return;
+                }
+            }
         }
 
         public static async Task<string> CreateMemo()
@@ -190,7 +262,7 @@ namespace WomoMemo
             FirebaseObject<Memo> e = await firebase
                 .Child("memos")
                 .Child(FirebaseUI.Instance.Client.User.Uid)
-                .PostAsync(Memo.Empty);
+                .PostAsync<Memo>(Memo.Empty);
 
             MemoWindow memoWin = new MemoWindow(Memo.Empty);
             memoWin.Show();

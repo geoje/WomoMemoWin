@@ -39,6 +39,7 @@ namespace WomoMemo.Models
                     y = memoWin.window.Top,
                     w = memoWin.window.Width,
                     h = memoWin.window.Height
+
                 }))) }
             }));
         }

@@ -30,7 +30,7 @@
                 </Button.Content>
                 <Button.ContextMenu>
                     <ContextMenu>
-                        <MenuItem x:Name="mnuMemos" Click="mnuNav_Click">
+                        <MenuItem x:Name="mnuMemos" Click="mnuNav_Click" IsChecked="True">
                             <MenuItem.Header>
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="NoteOutline" VerticalAlignment="Center" Margin="0,0,8,0" />
