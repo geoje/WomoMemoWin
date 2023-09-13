@@ -68,7 +68,7 @@ namespace WomoMemo.Views
                     .ConvertFrom(ColorMap.Background(Memo.Color))
                     as SolidColorBrush;
         }
-        private void window_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void window_SizeOrPosChanged(object sender, EventArgs e)
         {
             if (!_loaded) return;
 
@@ -87,6 +87,9 @@ namespace WomoMemo.Views
         // Func
         public void UpdateMemo(Memo memo)
         {
+            // Dismiss response to update when editing
+            if (PutMemoTimer != null) return;
+
             Dispatcher.Invoke(() =>
             {
                 Memo = memo;
@@ -136,7 +139,7 @@ namespace WomoMemo.Views
                 MaterialDesignThemes.Wpf.PackIconKind.TrashCanOutline :
                 MaterialDesignThemes.Wpf.PackIconKind.DeleteForeverOutline;
             btnDelete.ToolTip = Memo.Delete == null ? "Delete" : "Delete Forever";
-            btnDelete.Foreground = icoDelete.Foreground = Memo.Delete == null ? Brushes.Gray : Brushes.Red;
+            btnDelete.Foreground = icoDelete.Foreground = Memo.Delete == null ? Brushes.DimGray : Brushes.Red;
         }   
         
         // Header
@@ -204,11 +207,11 @@ namespace WomoMemo.Views
             // Update Main Window
             App.MainWin?.UpdateMemosFromAppByView();
 
-            // Put memo to server
+            //Put memo to server
             if (PutMemoTimer == null)
                 PutMemoTimer = new Timer(async _ =>
                 {
-                    if (!App.Memos.Any(memo => memo.Key == Memo.Key)) return;
+                    if (!App.Memos.ContainsKey(Memo.Key)) return;
 
                     await App.UpdateMemo(Memo);
 

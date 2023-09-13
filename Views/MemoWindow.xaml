@@ -6,7 +6,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d" WindowStyle="None" ShowInTaskbar="False"
         Title="WomoMemo" Width="300" Height="300" MinWidth="200" MinHeight="100"
-        Deactivated="window_Deactivated" Loaded="window_Loaded" Closing="window_Closing" Activated="window_Activated" SizeChanged="window_SizeChanged"
+        Deactivated="window_Deactivated" Loaded="window_Loaded" Closing="window_Closing" Activated="window_Activated" SizeChanged="window_SizeOrPosChanged"
         FontFamily="{DynamicResource MaterialDesignFont}">
     <WindowChrome.WindowChrome>
         <WindowChrome CaptionHeight="0" />
@@ -34,7 +34,7 @@
                 <RowDefinition Height="32" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <Grid x:Name="grdHeader" Grid.Row="0" Background="White" MouseDown="grdHeader_MouseDown">
+            <Grid x:Name="grdHeader" Grid.Row="0" Background="White" MouseDown="grdHeader_MouseDown" MouseUp="window_SizeOrPosChanged">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="32"/>
                     <ColumnDefinition Width="32"/>
@@ -46,26 +46,26 @@
                     <ColumnDefinition Width="32"/>
                 </Grid.ColumnDefinitions>
                 <Button x:Name="btnList" ToolTip="List" Grid.Column="0" Click="btnList_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="Menu" Foreground="Gray" />
+                    <materialDesign:PackIcon Kind="Menu" Foreground="DimGray" />
                 </Button>
                 <Button x:Name="btnNewOrRestore" ToolTip="New Memo" Grid.Column="1" Click="btnNewOrRestore_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon x:Name="icoNewOrRestore" Kind="Plus" Foreground="Gray" />
+                    <materialDesign:PackIcon x:Name="icoNewOrRestore" Kind="Plus" Foreground="DimGray" />
                 </Button>
                 <Button x:Name="btnColor" ToolTip="Color" Grid.Column="3" Padding="8" Style="{StaticResource MaterialDesignFlatButton}"
                     Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" CommandParameter="{x:Static Dock.Bottom}">
-                    <materialDesign:PackIcon Kind="PaletteOutline" Foreground="Gray" />
+                    <materialDesign:PackIcon Kind="PaletteOutline" Foreground="DimGray" />
                 </Button>
                 <Button x:Name="btnCheckbox" ToolTip="Enable Checkbox" Grid.Column="4" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon x:Name="icoCheckbox" Kind="CheckAll" Foreground="Gray" />
+                    <materialDesign:PackIcon x:Name="icoCheckbox" Kind="CheckAll" Foreground="DimGray" />
                 </Button>
                 <Button x:Name="btnArchive" ToolTip="Archive" Grid.Column="5" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon x:Name="icoArchive" Kind="ArchiveArrowDownOutline" Foreground="Gray" />
+                    <materialDesign:PackIcon x:Name="icoArchive" Kind="ArchiveArrowDownOutline" Foreground="DimGray" />
                 </Button>
                 <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="6" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon x:Name="icoDelete" Kind="TrashCanOutline" Foreground="Gray" />
+                    <materialDesign:PackIcon x:Name="icoDelete" Kind="TrashCanOutline" Foreground="DimGray" />
                 </Button>
                 <Button x:Name="btnClose" ToolTip="Close" Grid.Column="7" Click="btnClose_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="Close" Foreground="Gray" />
+                    <materialDesign:PackIcon Kind="Close" Foreground="DimGray" />
                 </Button>
             </Grid>
             <TextBox x:Name="txtTitle" Grid.Row="1" Margin="8,0" Padding="8"

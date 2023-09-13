@@ -21,7 +21,7 @@ namespace WomoMemo.Models
             get { return _checked == null ? null : string.Join(",", _checked); }
             set
             {
-                try { _checked = value == null ? null :
+                try { _checked = value == null ? null : value == "" ? new HashSet<int>() :
                         new HashSet<int>(Array.ConvertAll(value.Split(','), int.Parse)); }
                 catch { _checked = new HashSet<int>(); }
             }

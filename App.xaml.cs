@@ -66,7 +66,7 @@ namespace WomoMemo
             FirebaseUI.Instance.Client.AuthStateChanged += AuthStateChanged;
 
             // Open all memo windows
-            bool ExistsRemovableMemo = new();
+            bool ExistsRemovableMemo = false;
             Config.Load();
             Config.OpenedMemos.ForEach(jObj =>
             {
@@ -77,7 +77,8 @@ namespace WomoMemo
                     return;
                 }
 
-                MemoWindow memoWin = new MemoWindow(new Memo(memoKey));
+                MemoWindow memoWin = new MemoWindow(Memos.ContainsKey(memoKey) ? Memos[memoKey] : new Memo(memoKey));
+                MemoWins.Add(memoKey, memoWin);
                 memoWin.WindowStartupLocation = WindowStartupLocation.Manual;
 
                 // Intersect window with screen
@@ -132,10 +133,10 @@ namespace WomoMemo
                 firebase?.Dispose();
                 firebase = null;
 
-                foreach (var memoWin in MemoWins.Values)
-                    memoWin.Close();
                 Dispatcher.Invoke(() =>
                 {
+                    foreach (var memoWin in MemoWins.Values)
+                        memoWin.Close();
                     if (MainWin == null) MainWin = new MainWindow();
                     MainWin.Show();
                 });
@@ -179,6 +180,7 @@ namespace WomoMemo
             // Update memo windows
             if (MemoWins.ContainsKey(e.Key))
             {
+
                 if (e.EventType == FirebaseEventType.InsertOrUpdate)
                     MemoWins[e.Key].UpdateMemo(memo);
                 else if (e.EventType == FirebaseEventType.Delete)
@@ -279,7 +281,7 @@ namespace WomoMemo
                 .Child("memos")
                 .Child(FirebaseUI.Instance.Client.User.Uid)
                 .Child(memo.Key)
-                .PutAsync(Memo.Empty);
+                .PutAsync(memo);
         }
         public static async Task DeleteMemo(string key)
         {
