@@ -15,7 +15,6 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Reactive.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -67,15 +66,18 @@ namespace WomoMemo
             FirebaseUI.Instance.Client.AuthStateChanged += AuthStateChanged;
 
             // Open all memo windows
+            bool ExistsRemovableMemo = new();
             Config.Load();
             Config.OpenedMemos.ForEach(jObj =>
             {
                 string? memoKey = jObj["key"]?.ToObject<string>();
-                if (string.IsNullOrEmpty(memoKey)) return;
+                if (string.IsNullOrEmpty(memoKey))
+                {
+                    ExistsRemovableMemo = true;
+                    return;
+                }
 
-                Memo memo = new();
-                memo.Key = memoKey;
-                MemoWindow memoWin = new MemoWindow(memo);
+                MemoWindow memoWin = new MemoWindow(new Memo(memoKey));
                 memoWin.WindowStartupLocation = WindowStartupLocation.Manual;
 
                 // Intersect window with screen
@@ -101,6 +103,7 @@ namespace WomoMemo
 
                 memoWin.Show();
             });
+            if (ExistsRemovableMemo) Config.Save();
 
             // Open main window if there is no opened memo
             if (Config.OpenedMemos.Count == 0) (MainWin = new MainWindow()).Show();
@@ -262,12 +265,12 @@ namespace WomoMemo
             FirebaseObject<Memo> e = await firebase
                 .Child("memos")
                 .Child(FirebaseUI.Instance.Client.User.Uid)
-                .PostAsync<Memo>(Memo.Empty);
+                .PostAsync(Memo.Empty);
 
-            MemoWindow memoWin = new MemoWindow(Memo.Empty);
-            memoWin.Show();
-            Memos.Add(e.Key, Memo.Empty);
-            MemoWins.Add(e.Key, memoWin);
+            Memos.Add(e.Key, new Memo(e.Key));
+            MemoWins.Add(e.Key, new MemoWindow(Memos[e.Key]));
+            MemoWins[e.Key].Show();
+            if (MainWin != null) MainWin.UpdateMemosFromAppByView();
 
             return e.Key;
         }
@@ -290,9 +293,6 @@ namespace WomoMemo
                 .Child(FirebaseUI.Instance.Client.User.Uid)
                 .Child(key)
                 .DeleteAsync();
-
-            Memos.Remove(key);
-            MemoWins.Remove(key);
         }
     }
 }

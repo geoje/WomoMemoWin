@@ -26,21 +26,12 @@ namespace WomoMemo.Models
             }
         }
         [JsonProperty("delete")]
-        public string? Delete
-        {
-            get { return _delete?.ToString("O"); }
-            set {
-                try { _delete = value == null ? null : DateTime.Parse(value); }
-                catch { _delete = null; }
-            }
-        }
+        public DateTime? Delete { get; set; }
 
         [JsonIgnore]
         public string Key { get; set; }
         [JsonIgnore]
         public HashSet<int>? _checked { get; set; }
-        [JsonIgnore]
-        public DateTime? _delete { get; set; }
         [JsonIgnore]
         public string BackgroundColor
         {
@@ -52,9 +43,9 @@ namespace WomoMemo.Models
             get { return ColorMap.Border(Color); }
         }
 
-        public static Memo Empty => new();
+        public static Memo Empty => new("");
 
-        public Memo()
+        public Memo(string key)
         {
             Title = "";
             Content = "";
@@ -63,7 +54,7 @@ namespace WomoMemo.Models
             Checked = null;
             Delete = null;
 
-            Key = "";
+            Key = key;
         }
 
         public bool Equals(Memo? other)
@@ -74,9 +65,8 @@ namespace WomoMemo.Models
                 Content == other.Content &&
                 Color == other.Color &&
                 Archive == other.Archive &&
-                ((_checked == null && other._checked == null) ||
-                (_checked!.SetEquals(other._checked!))) &&
-                _delete == other._delete;
+                Checked == other.Checked &&
+                Delete == other.Delete;
         }
     }
 }

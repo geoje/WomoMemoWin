@@ -48,8 +48,8 @@
                 <Button x:Name="btnList" ToolTip="List" Grid.Column="0" Click="btnList_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="Menu" Foreground="Gray" />
                 </Button>
-                <Button x:Name="btnNew" ToolTip="New" Grid.Column="1" Click="btnNew_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="Plus" Foreground="Gray" />
+                <Button x:Name="btnNewOrRestore" ToolTip="New Memo" Grid.Column="1" Click="btnNewOrRestore_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon x:Name="icoNewOrRestore" Kind="Plus" Foreground="Gray" />
                 </Button>
                 <Button x:Name="btnColor" ToolTip="Color" Grid.Column="3" Padding="8" Style="{StaticResource MaterialDesignFlatButton}"
                     Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" CommandParameter="{x:Static Dock.Bottom}">
@@ -61,8 +61,8 @@
                 <Button x:Name="btnArchive" ToolTip="Archive" Grid.Column="5" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon x:Name="icoArchive" Kind="ArchiveArrowDownOutline" Foreground="Gray" />
                 </Button>
-                <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="6" Click="btnDelete_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="TrashCanOutline" Foreground="Gray" />
+                <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="6" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <materialDesign:PackIcon x:Name="icoDelete" Kind="TrashCanOutline" Foreground="Gray" />
                 </Button>
                 <Button x:Name="btnClose" ToolTip="Close" Grid.Column="7" Click="btnClose_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="Close" Foreground="Gray" />

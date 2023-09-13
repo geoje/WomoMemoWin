@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Windows;
@@ -94,27 +95,49 @@ namespace WomoMemo.Views
                     new BrushConverter()
                     .ConvertFrom(ColorMap.Background(memo.Color))
                     as SolidColorBrush;
-                UpdateCheckbox(memo._checked);
-                UpdateArchive(memo.Archive);
+                UpdateAppBar();
             });
         }
-        private void UpdateCheckbox(HashSet<int>? @checked = null)
+        private void UpdateAppBar()
         {
-            Memo._checked = @checked;
-            btnCheckbox.ToolTip = @checked == null ? "Enable Checkbox" : "Disable Checkbox";
-            icoCheckbox.Kind = @checked == null ?
+            // btnNewOrRestore
+            icoNewOrRestore.Kind = Memo.Delete == null ?
+                MaterialDesignThemes.Wpf.PackIconKind.Plus :
+                MaterialDesignThemes.Wpf.PackIconKind.History;
+            btnNewOrRestore.ToolTip = Memo.Delete == null ? "New Memo" : "Restore";
+
+            // Color, Checkbox, Archive
+            btnColor.IsEnabled = btnCheckbox.IsEnabled = btnArchive.IsEnabled = Memo.Delete == null;
+            btnColor.Opacity = btnCheckbox.Opacity = btnArchive.Opacity = Memo.Delete == null ? 1 : 0;
+
+            // Checkbox, Archive, Delete
+            UpdateCheckbox();
+            UpdateArchive();
+            UpdateDelete();
+        }
+        private void UpdateCheckbox()
+        {
+            btnCheckbox.ToolTip = Memo.Checked == null ? "Enable Checkbox" : "Disable Checkbox";
+            icoCheckbox.Kind = Memo.Checked == null ?
                 MaterialDesignThemes.Wpf.PackIconKind.CheckAll :
                 MaterialDesignThemes.Wpf.PackIconKind.CheckboxIndeterminateOutline;
         }
-        private void UpdateArchive(bool archive)
+        private void UpdateArchive()
         {
-            Memo.Archive = archive;
-            btnArchive.ToolTip = archive ? "Unarchive" : "Archive";
-            icoArchive.Kind = archive ?
+            btnArchive.ToolTip = Memo.Archive ? "Unarchive" : "Archive";
+            icoArchive.Kind = Memo.Archive ?
                 MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowUp :
                 MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowDownOutline;
         }
-
+        private void UpdateDelete()
+        {
+            icoDelete.Kind = Memo.Delete == null ?
+                MaterialDesignThemes.Wpf.PackIconKind.TrashCanOutline :
+                MaterialDesignThemes.Wpf.PackIconKind.DeleteForeverOutline;
+            btnDelete.ToolTip = Memo.Delete == null ? "Delete" : "Delete Forever";
+            btnDelete.Foreground = icoDelete.Foreground = Memo.Delete == null ? Brushes.Gray : Brushes.Red;
+        }   
+        
         // Header
         private void grdHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -126,13 +149,9 @@ namespace WomoMemo.Views
             App.MainWin.Show();
             App.MainWin.Focus();
         }
-        private async void btnNew_Click(object sender, RoutedEventArgs e)
+        private async void btnNewOrRestore_Click(object sender, RoutedEventArgs e)
         {
             await App.CreateMemo();
-        }
-        private async void btnDelete_Click(object sender, RoutedEventArgs e)
-        {
-            await App.DeleteMemo(Memo.Key);
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
@@ -150,13 +169,39 @@ namespace WomoMemo.Views
             Control sndCon = (Control)sender;
             if (sndCon.Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
             else if (sndCon.Name == "txtContent") Memo.Content = txtContent.Text;
-            else if (sndCon.Name == "btnCheckbox") UpdateCheckbox(Memo.Checked == null ? new HashSet<int>() : null);
-            else if (sndCon.Name == "btnArchive") UpdateArchive(!Memo.Archive);
+            else if (sndCon.Name == "btnCheckbox")
+            {
+                Memo._checked = Memo.Checked == null ? new HashSet<int>() : null;
+                UpdateCheckbox();
+            }
+            else if (sndCon.Name == "btnArchive")
+            {
+                Memo.Archive = !Memo.Archive;
+                UpdateArchive();
+            }
+            else if (sndCon.Name == "btnDelete")
+            {
+                if (Memo.Delete == null) Memo.Delete = DateTime.Now;
+                else
+                {
+                    App.Memos.Remove(Memo.Key);
+                    App.MemoWins.Remove(Memo.Key);
+                    App.MainWin?.UpdateMemosFromAppByView();
+                    App.DeleteMemo(Memo.Key).Start();
+                    Config.Save();
+                    Close();
+                    return;
+                }
+                UpdateAppBar();
+            }
             else // Changed color
             {
                 Memo.Color = (string)sndCon.Tag;
                 Background = grdHeader.Background = sndCon.Background;
             }
+
+            // Update Main Window
+            App.MainWin?.UpdateMemosFromAppByView();
 
             // Put memo to server
             if (PutMemoTimer == null)
