@@ -5,7 +5,6 @@ using Firebase.Auth.UI;
 using Firebase.Database;
 using Firebase.Database.Query;
 using Firebase.Database.Streaming;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -31,7 +30,7 @@ namespace WomoMemo
         readonly static string FIREBASE_TERMS_OF_SERVICE_URL = "https://www.womosoft.com/terms_of_service";
         readonly static string GOOGLE_REFRESH_TOKEN_URL = "https://securetoken.googleapis.com/v1/token";
         public readonly static string FIREBASE_DB_URL = "https://womoso-default-rtdb.firebaseio.com";
-        public readonly static string APP_NAME = "WomoMemo";
+        public readonly static string APP_NAME = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemo";
 
         public static MainWindow? MainWin;
         public static Dictionary<string, MemoWindow> MemoWins = new Dictionary<string, MemoWindow>();
@@ -112,9 +111,8 @@ namespace WomoMemo
             // Startup registry
 #if DEBUG
 #else
-            string appName = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemoWin";
             var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run", true);
-            key?.SetValue(appName, Process.GetCurrentProcess().MainModule?.FileName ?? "");
+            key?.SetValue(APP_NAME, Process.GetCurrentProcess().MainModule?.FileName ?? "");
 #endif
         }
         protected override void OnExit(ExitEventArgs e)
