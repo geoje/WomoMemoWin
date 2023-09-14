@@ -5,14 +5,11 @@ using Firebase.Auth.UI;
 using Firebase.Database;
 using Firebase.Database.Query;
 using Firebase.Database.Streaming;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -28,7 +25,6 @@ namespace WomoMemo
         readonly static string FIREBASE_AUTH_DOMAIN = "womoso.firebaseapp.com";
         readonly static string FIREBASE_PRIVACY_POLICY_URL = "https://www.womosoft.com/privacy_policy";
         readonly static string FIREBASE_TERMS_OF_SERVICE_URL = "https://www.womosoft.com/terms_of_service";
-        readonly static string GOOGLE_REFRESH_TOKEN_URL = "https://securetoken.googleapis.com/v1/token";
         public readonly static string FIREBASE_DB_URL = "https://womoso-default-rtdb.firebaseio.com";
         public readonly static string APP_NAME = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemo";
 
@@ -143,11 +139,8 @@ namespace WomoMemo
             {
                 firebase = new FirebaseClient(
                     FIREBASE_DB_URL,
-                    new FirebaseOptions
-                    {
-                        AuthTokenAsyncFactory = () => Task.FromResult(
-                            FirebaseUI.Instance.Client.User.Credential.IdToken)
-                    });
+                    new FirebaseOptions { AuthTokenAsyncFactory =
+                        () => FirebaseUI.Instance.Client.User.GetIdTokenAsync() });
                 Observable = firebase
                   .Child("memos")
                   .Child(e.User.Uid)
@@ -192,67 +185,12 @@ namespace WomoMemo
                 }
             }
         }
-        private async Task<string> GetAccessTokenFromRefreshToken()
+        private void HandleSubscribeError(Exception ex)
         {
-            string url = GOOGLE_REFRESH_TOKEN_URL + "?key=" + FIREBASE_API_KEY;
-            var content = JsonContent.Create(new
-            {
-                grant_type = "refresh_token",
-                refresh_token = FirebaseUI.Instance.Client.User.Credential.RefreshToken
-            });
-            using (var client = new HttpClient())
-            {
-                var response = await client.PostAsync(url, content);
-                try { response.EnsureSuccessStatusCode(); }
-                catch(Exception ex)
-                {
-                    Debug.WriteLine(ex.ToString(), "[GetAccessTokenFromRefreshToken]");
-                    return "";
-                }
-
-                JObject jObj = JObject.Parse(await response.Content.ReadAsStringAsync());
-                return jObj["access_token"]?.ToString() ?? "";
-            }
-        }
-        private async void HandleSubscribeError(Exception ex)
-        {
-            if (ex.ToString().Contains("401 (Unauthorized)"))
-            {
-                string newAccessToken = await GetAccessTokenFromRefreshToken();
-                Debug.WriteLine(newAccessToken, "[HandleSubscribeError Token]");
-                if (string.IsNullOrEmpty(newAccessToken))
-                {
-                    Debug.WriteLine("newAccessToken is null or empty", "[HandleSubscribeError]");
-                    FirebaseUI.Instance.Client.SignOut();
-                    if (MainWin != null)
-                        MainWin.ShowAlert("Token refreshing was failed!\nPlease login again.");
-                    return;
-                }
-
-                var authCredential = GoogleProvider.GetCredential(newAccessToken);
-                UserCredential userCredential;
-                try
-                {
-                    // Need to fix 400 INVALID_IDP_RESPONSE
-                    userCredential = await FirebaseUI.Instance.Client.SignInWithCredentialAsync(authCredential);
-                }
-                catch (Exception excep)
-                {
-                    Debug.WriteLine(excep.ToString(), "[HandleSubscribeError SignInWithCredentialAsync]");
-                    FirebaseUI.Instance.Client.SignOut();
-                    if (MainWin != null)
-                        MainWin.ShowAlert("Token refreshing was failed!\nPlease login again.");
-                    return;
-                }
-                if (userCredential.User == null)
-                {
-                    Debug.WriteLine("userCredential.User is null", "[HandleSubscribeError]");
-                    FirebaseUI.Instance.Client.SignOut();
-                    if (MainWin != null)
-                        MainWin.ShowAlert("Token refreshing was failed!\nPlease login again.");
-                    return;
-                }
-            }
+            Debug.WriteLine(ex.ToString(), "[HandleSubscribeError]");
+            FirebaseUI.Instance.Client.SignOut();
+            if (MainWin != null)
+                MainWin.ShowAlert("[HandleSubscribeError]\n" + ex.Message);
         }
 
         public static async Task<string> CreateMemo()
