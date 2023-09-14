@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -191,7 +192,7 @@ namespace WomoMemo.Views
                     App.Memos.Remove(Memo.Key);
                     App.MemoWins.Remove(Memo.Key);
                     App.MainWin?.UpdateMemosFromAppByView();
-                    App.DeleteMemo(Memo.Key).Start();
+                    new Task(async () => await App.DeleteMemo(Memo.Key)).Start();
                     Config.Save();
                     Close();
                     return;
