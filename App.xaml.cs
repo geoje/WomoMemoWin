@@ -25,7 +25,7 @@ namespace WomoMemo
         readonly static string FIREBASE_AUTH_DOMAIN = "womoso.firebaseapp.com";
         readonly static string FIREBASE_PRIVACY_POLICY_URL = "https://www.womosoft.com/privacy_policy";
         readonly static string FIREBASE_TERMS_OF_SERVICE_URL = "https://www.womosoft.com/terms_of_service";
-        public readonly static string FIREBASE_DB_URL = "https://womoso-default-rtdb.firebaseio.com";
+        readonly static string FIREBASE_DB_URL = "https://womoso-default-rtdb.firebaseio.com";
         public readonly static string APP_NAME = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Name ?? "WomoMemo";
 
         public static MainWindow? MainWin;
@@ -193,25 +193,45 @@ namespace WomoMemo
                 MainWin.ShowAlert("[HandleSubscribeError]\n" + ex.Message);
         }
 
-        public static async Task<string> CreateMemo()
+        public static void DockMemoWins()
+        {
+            if (Config.Dock != "Left" && Config.Dock != "Right") return;
+
+            int SIZE = 300, GAP = 8;
+            Rectangle winRect = new Rectangle(Config.Dock == "Left" ? GAP : Screen.PrimaryScreen.Bounds.Width - SIZE - GAP, GAP, SIZE, SIZE);
+            foreach (MemoWindow memoWin in MemoWins.Values)
+            {
+                memoWin.Width = memoWin.Height = SIZE;
+                memoWin.Left = winRect.X;
+                memoWin.Top = winRect.Y;
+
+                winRect.Y += SIZE + GAP;
+                if (!Screen.PrimaryScreen.Bounds.Contains(winRect))
+                {
+                    winRect.X += Config.Dock == "Left" ? SIZE + GAP : -SIZE - GAP;
+                    winRect.Y = GAP;
+                }
+            }
+        }
+        public static async Task<string> CreateMemo(MemoWindow memoWin)
         {
             if (firebase == null) return "";
 
             FirebaseObject<Memo> e = await firebase
                 .Child("memos")
                 .Child(FirebaseUI.Instance.Client.User.Uid)
-                .PostAsync(Memo.Empty);
+                .PostAsync(memoWin.Memo);
 
-            Memos.Add(e.Key, new Memo(e.Key));
-            MemoWins.Add(e.Key, new MemoWindow(Memos[e.Key]));
-            MemoWins[e.Key].Show();
+            memoWin.Memo.Key = e.Key;
+            Memos.Add(e.Key, memoWin.Memo);
+            MemoWins.Add(e.Key, memoWin);
             if (MainWin != null) MainWin.UpdateMemosFromAppByView();
 
             return e.Key;
         }
         public static async Task UpdateMemo(Memo memo)
         {
-            if (firebase == null) return;
+            if (firebase == null || string.IsNullOrEmpty(memo.Key)) return;
 
             await firebase
                 .Child("memos")
@@ -221,7 +241,7 @@ namespace WomoMemo
         }
         public static async Task DeleteMemo(string key)
         {
-            if (firebase == null) return;
+            if (firebase == null || string.IsNullOrEmpty(key)) return;
 
             await firebase
                 .Child("memos")

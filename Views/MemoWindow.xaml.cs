@@ -18,7 +18,7 @@ namespace WomoMemo.Views
         bool _loaded = false;
 
         public Memo Memo;
-        public Timer? ResizeTimer, PutMemoTimer;
+        public Timer? SizePosTimer, PutMemoTimer;
 
         // Window
         public MemoWindow(Memo memo)
@@ -68,20 +68,21 @@ namespace WomoMemo.Views
                     .ConvertFrom(ColorMap.Background(Memo.Color))
                     as SolidColorBrush;
         }
-        private void window_SizeOrPosChanged(object sender, EventArgs e)
+        private void window_SizeLocationChanged(object sender, EventArgs e)
         {
             if (!_loaded) return;
 
             // Save config
-            if (ResizeTimer == null)
-                ResizeTimer = new Timer(_ => Dispatcher.Invoke(() => Config.Save()), null, 400, Timeout.Infinite);
+            if (SizePosTimer == null)
+                SizePosTimer = new Timer(_ => Dispatcher.Invoke(() => Config.Save()), null, 400, Timeout.Infinite);
             // Throttle
             else
-                ResizeTimer.Change(400, Timeout.Infinite);
+                SizePosTimer.Change(400, Timeout.Infinite);
         }
         private void window_Closing(object sender, CancelEventArgs e)
         {
             App.MemoWins.Remove(Memo.Key);
+            App.DockMemoWins();
         }
 
         // Func
@@ -150,12 +151,13 @@ namespace WomoMemo.Views
             App.MainWin.Show();
             App.MainWin.Focus();
         }
-        private async void mnuNew_Click(object sender, RoutedEventArgs e)
+        private void mnuNew_Click(object sender, RoutedEventArgs e)
         {
-            await App.CreateMemo();
+            new MemoWindow(Memo.Empty).Show();
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
+            if (string.IsNullOrEmpty(Memo.Key)) { Close(); return; }
             App.MemoWins.Remove(Memo.Key);
             Config.Save();
 
@@ -167,6 +169,7 @@ namespace WomoMemo.Views
             }
             Close();
         }
+
 
         // Body
         private void handleMemoChanged(object sender, EventArgs e)
@@ -197,11 +200,14 @@ namespace WomoMemo.Views
                 if (Memo.Delete == null) Memo.Delete = DateTime.Now;
                 else
                 {
-                    App.Memos.Remove(Memo.Key);
-                    App.MemoWins.Remove(Memo.Key);
-                    App.MainWin?.UpdateMemosFromAppByView();
-                    new Task(async () => await App.DeleteMemo(Memo.Key)).Start();
-                    Config.Save();
+                    if (!string.IsNullOrEmpty(Memo.Key))
+                    {
+                        App.Memos.Remove(Memo.Key);
+                        App.MemoWins.Remove(Memo.Key);
+                        App.MainWin?.UpdateMemosFromAppByView();
+                        new Task(async () => await App.DeleteMemo(Memo.Key)).Start();
+                        Config.Save();
+                    }
                     Close();
                     return;
                 }
@@ -220,9 +226,13 @@ namespace WomoMemo.Views
             if (PutMemoTimer == null)
                 PutMemoTimer = new Timer(async _ =>
                 {
-                    if (!App.Memos.ContainsKey(Memo.Key)) return;
-
-                    await App.UpdateMemo(Memo);
+                    if (string.IsNullOrEmpty(Memo.Key))
+                    {
+                        await App.CreateMemo(this);
+                        App.DockMemoWins();
+                    }
+                    else if (App.Memos.ContainsKey(Memo.Key))
+                        await App.UpdateMemo(Memo);
 
                     PutMemoTimer?.Dispose();
                     PutMemoTimer = null;

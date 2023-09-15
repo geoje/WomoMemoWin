@@ -105,9 +105,9 @@ namespace WomoMemo
             ViewMode = ((Control)sender).Name.Substring(3);
             UpdateMemosFromAppByView();
         }
-        private async void btnNew_Click(object sender, RoutedEventArgs e)
+        private void btnNew_Click(object sender, RoutedEventArgs e)
         {
-            await App.CreateMemo();
+            new MemoWindow(Memo.Empty).Show();
         }
         private void btnUser_Click(object sender, RoutedEventArgs e)
         {
@@ -129,6 +129,14 @@ namespace WomoMemo
         {
             Close();
         }
+        private void mnuDock_Click(object sender, RoutedEventArgs e)
+        {
+            Config.Dock = ((Control)sender).Name.Substring(7);
+            if (Config.Dock != "Left" && Config.Dock != "Right") Config.Dock = "";
+
+            App.DockMemoWins();
+            Config.Save();
+        }
 
         // Body
         private void Border_MouseUp(object sender, MouseButtonEventArgs e)
@@ -138,6 +146,7 @@ namespace WomoMemo
             if (!App.MemoWins.ContainsKey(key))
             {
                 App.MemoWins.Add(key, new MemoWindow(App.Memos[key]));
+                App.DockMemoWins();
                 Config.Save();
             }
             App.MemoWins[key].Show();
