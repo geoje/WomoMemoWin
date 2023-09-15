@@ -37,34 +37,76 @@
             <Grid x:Name="grdHeader" Grid.Row="0" Background="White" MouseDown="grdHeader_MouseDown" MouseUp="window_SizeOrPosChanged">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="32"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="32"/>
                 </Grid.ColumnDefinitions>
-                <Button x:Name="btnList" ToolTip="List" Grid.Column="0" Click="btnList_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon Kind="Menu" Foreground="DimGray" />
+                <Button x:Name="btnMenu" ToolTip="Menu" Grid.Column="0" Click="btnMenu_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                    <Button.Content>
+                        <materialDesign:PackIcon Kind="Menu" Foreground="DimGray" />
+                    </Button.Content>
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="mnuList" Click="mnuList_Click">
+                                <MenuItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="NoteOutline" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <TextBlock Padding="4" Text="List" />
+                                    </StackPanel>
+                                </MenuItem.Header>
+                            </MenuItem>
+                            <MenuItem x:Name="mnuNew" Click="mnuNew_Click">
+                                <MenuItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <TextBlock Padding="4" Text="New Memo" />
+                                    </StackPanel>
+                                </MenuItem.Header>
+                            </MenuItem>
+                            <Separator Style="{StaticResource MaterialDesignSeparator}" />
+                            <MenuItem x:Name="mnuColor" Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" CommandParameter="{x:Static Dock.Bottom}">
+                                <MenuItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="PaletteOutline" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <TextBlock Padding="4" Text="Color" />
+                                    </StackPanel>
+                                </MenuItem.Header>
+                            </MenuItem>
+                            <MenuItem x:Name="mnuCheckbox" Click="handleMemoChanged">
+                                <MenuItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon x:Name="icoCheckbox" Kind="CheckAll" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <TextBlock x:Name="txtCheckbox" Padding="4" Text="Enable Checkbox" />
+                                    </StackPanel>
+                                </MenuItem.Header>
+                            </MenuItem>
+                            <MenuItem x:Name="mnuArchive" Click="handleMemoChanged">
+                                <MenuItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon x:Name="icoArchive" Kind="ArchiveArrowDownOutline" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <TextBlock x:Name="txtArchive" Padding="4" Text="Archive" />
+                                    </StackPanel>
+                                </MenuItem.Header>
+                            </MenuItem>
+                            <MenuItem x:Name="mnuRestore" Click="handleMemoChanged" Visibility="Collapsed">
+                                <MenuItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="History" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <TextBlock Padding="4" Text="Restore" />
+                                    </StackPanel>
+                                </MenuItem.Header>
+                            </MenuItem>
+                            <MenuItem x:Name="mnuDelete" Click="handleMemoChanged">
+                                <MenuItem.Header>
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon x:Name="icoDelete" Kind="TrashCanOutline" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                        <TextBlock x:Name="txtDelete" Padding="4" Text="Delete" />
+                                    </StackPanel>
+                                </MenuItem.Header>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Button.ContextMenu>
                 </Button>
-                <Button x:Name="btnNewOrRestore" ToolTip="New Memo" Grid.Column="1" Click="btnNewOrRestore_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon x:Name="icoNewOrRestore" Kind="Plus" Foreground="DimGray" />
-                </Button>
-                <Button x:Name="btnColor" ToolTip="Color" Grid.Column="3" Padding="8" Style="{StaticResource MaterialDesignFlatButton}"
-                    Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}" CommandParameter="{x:Static Dock.Bottom}">
-                    <materialDesign:PackIcon Kind="PaletteOutline" Foreground="DimGray" />
-                </Button>
-                <Button x:Name="btnCheckbox" ToolTip="Enable Checkbox" Grid.Column="4" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon x:Name="icoCheckbox" Kind="CheckAll" Foreground="DimGray" />
-                </Button>
-                <Button x:Name="btnArchive" ToolTip="Archive" Grid.Column="5" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon x:Name="icoArchive" Kind="ArchiveArrowDownOutline" Foreground="DimGray" />
-                </Button>
-                <Button x:Name="btnDelete" ToolTip="Delete" Grid.Column="6" Click="handleMemoChanged" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
-                    <materialDesign:PackIcon x:Name="icoDelete" Kind="TrashCanOutline" Foreground="DimGray" />
-                </Button>
-                <Button x:Name="btnClose" ToolTip="Close" Grid.Column="7" Click="btnClose_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button x:Name="btnClose" ToolTip="Close" Grid.Column="2" Click="btnClose_Click" Padding="8" Style="{StaticResource MaterialDesignFlatButton}">
                     <materialDesign:PackIcon Kind="Close" Foreground="DimGray" />
                 </Button>
             </Grid>

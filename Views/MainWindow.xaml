@@ -113,7 +113,7 @@
                                     Background="{Binding BackgroundColor}" Padding="8" Margin="4,0,4,8" Cursor="Hand" MouseUp="Border_MouseUp">
                                 <StackPanel>
                                     <TextBlock Visibility="{Binding VisibilityTitle}" Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Title}" FontWeight="Bold" />
-                                    <Separator Visibility="{Binding VisibilitySeparator}" BorderBrush="{Binding BorderColor}" Style="{StaticResource MaterialDesignDarkSeparator}" />
+                                    <Separator Visibility="{Binding VisibilitySeparator}" Style="{StaticResource MaterialDesignDarkSeparator}" Background="{Binding BorderColor}" />
                                     <TextBlock Visibility="{Binding VisibilityContent}" Foreground="#1A202C" TextWrapping="Wrap" Text="{Binding Content}" />
                                 </StackPanel>
                             </Border>

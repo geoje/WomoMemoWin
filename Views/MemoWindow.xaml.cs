@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -105,15 +104,11 @@ namespace WomoMemo.Views
         }
         private void UpdateAppBar()
         {
-            // btnNewOrRestore
-            icoNewOrRestore.Kind = Memo.Delete == null ?
-                MaterialDesignThemes.Wpf.PackIconKind.Plus :
-                MaterialDesignThemes.Wpf.PackIconKind.History;
-            btnNewOrRestore.ToolTip = Memo.Delete == null ? "New Memo" : "Restore";
-
             // Color, Checkbox, Archive
-            btnColor.IsEnabled = btnCheckbox.IsEnabled = btnArchive.IsEnabled = Memo.Delete == null;
-            btnColor.Opacity = btnCheckbox.Opacity = btnArchive.Opacity = Memo.Delete == null ? 1 : 0;
+            mnuColor.Visibility = mnuCheckbox.Visibility = mnuArchive.Visibility = Memo.Delete == null ? Visibility.Visible : Visibility.Collapsed;
+
+            // Restore
+            mnuRestore.Visibility = Memo.Delete == null ? Visibility.Collapsed : Visibility.Visible;
 
             // Checkbox, Archive, Delete
             UpdateCheckbox();
@@ -122,39 +117,40 @@ namespace WomoMemo.Views
         }
         private void UpdateCheckbox()
         {
-            btnCheckbox.ToolTip = Memo.Checked == null ? "Enable Checkbox" : "Disable Checkbox";
-            icoCheckbox.Kind = Memo.Checked == null ?
-                MaterialDesignThemes.Wpf.PackIconKind.CheckAll :
-                MaterialDesignThemes.Wpf.PackIconKind.CheckboxIndeterminateOutline;
+            txtCheckbox.Text = Memo.Checked == null ? "Enable Checkbox" : "Disable Checkbox";
+            icoCheckbox.Kind = Memo.Checked == null ? PackIconKind.CheckAll : PackIconKind.CheckboxIndeterminateOutline;
         }
         private void UpdateArchive()
         {
-            btnArchive.ToolTip = Memo.Archive ? "Unarchive" : "Archive";
-            icoArchive.Kind = Memo.Archive ?
-                MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowUp :
-                MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowDownOutline;
+            txtArchive.Text = Memo.Archive ? "Unarchive" : "Archive";
+            icoArchive.Kind = Memo.Archive ? PackIconKind.ArchiveArrowUp : PackIconKind.ArchiveArrowDownOutline;
         }
         private void UpdateDelete()
         {
-            icoDelete.Kind = Memo.Delete == null ?
-                MaterialDesignThemes.Wpf.PackIconKind.TrashCanOutline :
-                MaterialDesignThemes.Wpf.PackIconKind.DeleteForeverOutline;
-            btnDelete.ToolTip = Memo.Delete == null ? "Delete" : "Delete Forever";
-            btnDelete.Foreground = icoDelete.Foreground = Memo.Delete == null ? Brushes.DimGray : Brushes.Red;
-        }   
-        
+            icoDelete.Kind = Memo.Delete == null ? PackIconKind.TrashCanOutline : PackIconKind.DeleteForeverOutline;
+            txtDelete.Text = Memo.Delete == null ? "Delete" : "Delete Forever";
+            txtDelete.Foreground = icoDelete.Foreground = Memo.Delete == null ? Brushes.White : Brushes.Red;
+        }
+
         // Header
         private void grdHeader_MouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left) DragMove();
         }
-        private void btnList_Click(object sender, RoutedEventArgs e)
+        private void btnMenu_Click(object sender, RoutedEventArgs e)
+        {
+            btnMenu.ContextMenu.PlacementTarget = btnMenu;
+            btnMenu.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+            btnMenu.ContextMenu.IsOpen = true;
+            e.Handled = true;
+        }
+        private void mnuList_Click(object sender, RoutedEventArgs e)
         {
             if (App.MainWin == null) App.MainWin = new MainWindow();
             App.MainWin.Show();
             App.MainWin.Focus();
         }
-        private async void btnNewOrRestore_Click(object sender, RoutedEventArgs e)
+        private async void mnuNew_Click(object sender, RoutedEventArgs e)
         {
             await App.CreateMemo();
         }
@@ -162,6 +158,13 @@ namespace WomoMemo.Views
         {
             App.MemoWins.Remove(Memo.Key);
             Config.Save();
+
+            if (Memo.Equals(Memo.Empty))
+            {
+                App.Memos.Remove(Memo.Key);
+                if (App.MainWin != null) App.MainWin.UpdateMemosFromAppByView();
+                Task.Run(() => App.DeleteMemo(Memo.Key));
+            }
             Close();
         }
 
@@ -174,17 +177,22 @@ namespace WomoMemo.Views
             Control sndCon = (Control)sender;
             if (sndCon.Name == "txtTitle") Title = Memo.Title = txtTitle.Text;
             else if (sndCon.Name == "txtContent") Memo.Content = txtContent.Text;
-            else if (sndCon.Name == "btnCheckbox")
+            else if (sndCon.Name == "mnuCheckbox")
             {
                 Memo._checked = Memo.Checked == null ? new HashSet<int>() : null;
                 UpdateCheckbox();
             }
-            else if (sndCon.Name == "btnArchive")
+            else if (sndCon.Name == "mnuArchive")
             {
                 Memo.Archive = !Memo.Archive;
                 UpdateArchive();
             }
-            else if (sndCon.Name == "btnDelete")
+            else if (sndCon.Name == "mnuRestore")
+            {
+                Memo.Delete = null;
+                UpdateAppBar();
+            }
+            else if (sndCon.Name == "mnuDelete")
             {
                 if (Memo.Delete == null) Memo.Delete = DateTime.Now;
                 else
