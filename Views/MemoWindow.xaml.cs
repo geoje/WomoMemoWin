@@ -46,6 +46,7 @@ namespace WomoMemo.Views
         {
             _loaded = true;
         }
+
         private void window_Activated(object sender, EventArgs e)
         {
             foreach (Control control in grdHeader.Children)
