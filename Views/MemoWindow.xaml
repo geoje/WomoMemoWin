@@ -25,6 +25,15 @@
                 <Button Style="{StaticResource MaterialDesignPaperButton}" />
                 <Button Style="{StaticResource MaterialDesignPaperButton}" />
                 <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
+                <Button Style="{StaticResource MaterialDesignPaperButton}" />
             </WrapPanel>
         </materialDesign:DrawerHost.BottomDrawerContent>
 

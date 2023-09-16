@@ -44,7 +44,8 @@ namespace WomoMemo.Views
             foreach (Button btnCol in pnlColor.Children)
             {
                 string colorKey = colorKeyList[i++];
-                btnCol.Tag = colorKey;
+                btnCol.Width = btnCol.Height = 24;
+                btnCol.ToolTip = colorKey;
                 btnCol.Background = new BrushConverter().ConvertFrom(ColorMap.Background(colorKey)) as SolidColorBrush;
                 btnCol.BorderThickness = new Thickness();
                 btnCol.Margin = new Thickness(2);
@@ -230,7 +231,7 @@ namespace WomoMemo.Views
             }
             else // Changed color
             {
-                Memo.Color = (string)sndCon.Tag;
+                Memo.Color = (string)sndCon.ToolTip;
                 Background = grdHeader.Background = sndCon.Background;
             }
 
