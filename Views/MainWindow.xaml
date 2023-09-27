@@ -15,6 +15,7 @@
             <RowDefinition Height="32" />
             <RowDefinition Height="48" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="24" />
         </Grid.RowDefinitions>
         <Grid x:Name="GrdAppBar" Grid.Row="0" MouseDown="GridAppBar_MouseDown" Background="White">
             <Grid.ColumnDefinitions>
@@ -133,6 +134,7 @@
             </Button>
         </Grid>
         <TextBox Grid.Row="1" Margin="8" Padding="8" Background="#EFEFEF" materialDesign:HintAssist.Hint="Search" materialDesign:TextFieldAssist.HasClearButton="True" />
+        <materialDesign:PackIcon x:Name="icoBackground" Grid.Row="2" Kind="NoteOutline" Foreground="#EEE" Width="192" Height="192" HorizontalAlignment="Center" VerticalAlignment="Center" />
         <ScrollViewer x:Name="scrollViewer" Grid.Row="2" VerticalScrollBarVisibility="Auto">
             <StackPanel HorizontalAlignment="Center">
                 <ItemsControl x:Name="lstMemo" Padding="4,0,4,0">
@@ -156,6 +158,9 @@
                 </ItemsControl>
             </StackPanel>
         </ScrollViewer>
+        <Grid x:Name="grdDeletion"  Grid.Row="4" Background="#f5f5f5" Visibility="Collapsed">
+            <TextBlock Grid.Row="4" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center">All meoms are entirely removed after 30 days of deletion</TextBlock>
+        </Grid>
         <materialDesign:Snackbar x:Name="snkAlert" Grid.Row="2" Foreground="White" Background="#CC000000" MessageQueue="{materialDesign:MessageQueue}" />
     </Grid>
 </Window>

@@ -14,6 +14,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Threading;
 using WomoMemo.Models;
 using WomoMemo.Views;
 
@@ -53,7 +54,7 @@ namespace WomoMemo
             {
                 ApiKey = FIREBASE_API_KEY,
                 AuthDomain = FIREBASE_AUTH_DOMAIN,
-                Providers = new FirebaseAuthProvider[] { new GoogleProvider() },
+                Providers = new FirebaseAuthProvider[] { new GoogleProvider(), new MicrosoftProvider() },
                 PrivacyPolicyUrl = FIREBASE_PRIVACY_POLICY_URL,
                 TermsOfServiceUrl = FIREBASE_TERMS_OF_SERVICE_URL,
                 UserRepository = new FileUserRepository(APP_NAME)
@@ -150,6 +151,8 @@ namespace WomoMemo
         }
         private void MemoUpdated(FirebaseEvent<Memo> e)
         {
+            if (e.Object == null) return;
+
             // Check if the memo need to update
             Memo memo = e.Object;
             memo.Key = e.Key;
@@ -193,7 +196,7 @@ namespace WomoMemo
                 MainWin.ShowAlert("[HandleSubscribeError]\n" + ex.Message);
         }
 
-        public static void DockMemoWins()
+        public static void DockMemoWins(Dispatcher dispatcher)
         {
             if (Config.Dock != "Left" && Config.Dock != "Right") return;
 
@@ -201,16 +204,19 @@ namespace WomoMemo
             Rectangle winRect = new Rectangle(Config.Dock == "Left" ? GAP : Screen.PrimaryScreen.Bounds.Width - SIZE - GAP, GAP, SIZE, SIZE);
             foreach (MemoWindow memoWin in MemoWins.Values)
             {
-                memoWin.Width = memoWin.Height = SIZE;
-                memoWin.Left = winRect.X;
-                memoWin.Top = winRect.Y;
-
-                winRect.Y += SIZE + GAP;
-                if (!Screen.PrimaryScreen.Bounds.Contains(winRect))
+                dispatcher.Invoke(() =>
                 {
-                    winRect.X += Config.Dock == "Left" ? SIZE + GAP : -SIZE - GAP;
-                    winRect.Y = GAP;
-                }
+                    memoWin.Width = memoWin.Height = SIZE;
+                    memoWin.Left = winRect.X;
+                    memoWin.Top = winRect.Y;
+
+                    winRect.Y += SIZE + GAP;
+                    if (!Screen.PrimaryScreen.Bounds.Contains(winRect))
+                    {
+                        winRect.X += Config.Dock == "Left" ? SIZE + GAP : -SIZE - GAP;
+                        winRect.Y = GAP;
+                    }
+                });
             }
         }
         public static async Task<string> CreateMemo(MemoWindow memoWin)

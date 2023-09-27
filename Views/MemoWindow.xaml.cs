@@ -98,7 +98,7 @@ namespace WomoMemo.Views
         private void window_Closing(object sender, CancelEventArgs e)
         {
             App.MemoWins.Remove(Memo.Key);
-            App.DockMemoWins();
+            App.DockMemoWins(Dispatcher);
         }
 
         // Func
@@ -245,7 +245,7 @@ namespace WomoMemo.Views
                     if (string.IsNullOrEmpty(Memo.Key))
                     {
                         await App.CreateMemo(this);
-                        App.DockMemoWins();
+                        App.DockMemoWins(Dispatcher);
                     }
                     else if (App.Memos.ContainsKey(Memo.Key))
                         await App.UpdateMemo(Memo);

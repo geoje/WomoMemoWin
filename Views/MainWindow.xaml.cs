@@ -28,6 +28,7 @@ namespace WomoMemo
             foreach (Memo memo in App.Memos.Values.Where(memo => !memo.Archive && memo.Delete == null))
                 Memos.Add(memo);
             lstMemo.ItemsSource = Memos;
+            icoBackground.Visibility = Memos.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
         }
         private void Window_Closed(object sender, EventArgs e)
         {
@@ -76,6 +77,7 @@ namespace WomoMemo
                 Memos.Clear();
                 foreach (var memo in App.Memos.Values.Where(filter))
                     Memos.Add(memo);
+                icoBackground.Visibility = Memos.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
             });
         }
         public void ShowAlert(string message)
@@ -101,9 +103,13 @@ namespace WomoMemo
         }
         private void mnuNav_Click(object sender, RoutedEventArgs e)
         {
-            mnuMemos.IsChecked = mnuArchive.IsChecked = mnuTrash.IsChecked = false;
             ViewMode = ((Control)sender).Name.Substring(3);
+            grdDeletion.Visibility = ViewMode == "Trash" ? Visibility.Visible : Visibility.Collapsed;
             UpdateMemosFromAppByView();
+            icoBackground.Kind =
+                ViewMode == "Archive" ? MaterialDesignThemes.Wpf.PackIconKind.ArchiveArrowDownOutline :
+                ViewMode == "Trash" ? MaterialDesignThemes.Wpf.PackIconKind.TrashCanOutline :
+                MaterialDesignThemes.Wpf.PackIconKind.NoteOutline;
         }
         private void btnNew_Click(object sender, RoutedEventArgs e)
         {
@@ -134,7 +140,7 @@ namespace WomoMemo
             Config.Dock = ((Control)sender).Name.Substring(7);
             if (Config.Dock != "Left" && Config.Dock != "Right") Config.Dock = "";
 
-            App.DockMemoWins();
+            App.DockMemoWins(Dispatcher);
             Config.Save();
         }
 
@@ -146,7 +152,7 @@ namespace WomoMemo
             if (!App.MemoWins.ContainsKey(key))
             {
                 App.MemoWins.Add(key, new MemoWindow(App.Memos[key]));
-                App.DockMemoWins();
+                App.DockMemoWins(Dispatcher);
                 Config.Save();
             }
             App.MemoWins[key].Show();
